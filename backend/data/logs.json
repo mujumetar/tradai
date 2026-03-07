@@ -1,0 +1,902 @@
+[
+  {
+    "timestamp": "2026-03-01T08:14:50.808Z",
+    "method": "POST",
+    "url": "/api/admin/ban-ip",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.426Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.405Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.386Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "4ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.358Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "4ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.324Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.304Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "4ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.280Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "5ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:44.250Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:40.347Z",
+    "method": "POST",
+    "url": "/api/admin/ban-ip",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:38.268Z",
+    "method": "POST",
+    "url": "/api/admin/ban-ip",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:14:06.542Z",
+    "method": "POST",
+    "url": "/api/admin/ban-ip",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:14.052Z",
+    "method": "POST",
+    "url": "/api/admin/ban-ip",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:11.197Z",
+    "method": "POST",
+    "url": "/api/admin/ban-ip",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:03.243Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:03.216Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "7ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:03.191Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:03.167Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "7ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:03.138Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:03.106Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:03.060Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:02.960Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "13ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:01.388Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:01.344Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:01.231Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:01.184Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:01.076Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.859Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.811Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "4ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.790Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.742Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.558Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.530Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.483Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.266Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "7ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.232Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "8ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.201Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "11ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.162Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "4ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:12:00.120Z",
+    "method": "POST",
+    "url": "/api/users",
+    "status": 201,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "102ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:11:33.918Z",
+    "method": "POST",
+    "url": "/api/users/login",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:11:26.069Z",
+    "method": "POST",
+    "url": "/api/users/login",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:37.028Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:37.016Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:37.012Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:37.006Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:36.996Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:36.991Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:36.987Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:36.977Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:22.104Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:10:14.478Z",
+    "method": "POST",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.971Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.966Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.959Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.956Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.952Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.946Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.941Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:37.935Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:24.175Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.670Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.666Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.658Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.651Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.645Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.637Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.633Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:09:10.626Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:52.237Z",
+    "method": "POST",
+    "url": "/api/users/register",
+    "status": 404,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.929Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.608Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.603Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.595Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.565Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.560Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.541Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.537Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.517Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.509Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.495Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.481Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:08:30.413Z",
+    "method": "POST",
+    "url": "/api/users",
+    "status": 201,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "74ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:07:52.164Z",
+    "method": "GET",
+    "url": "/api/users/login",
+    "status": 404,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:07:47.031Z",
+    "method": "GET",
+    "url": "/api/auth/login",
+    "status": 404,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:07:41.819Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "0ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:07:09.741Z",
+    "method": "POST",
+    "url": "/api/users/login",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:07:01.342Z",
+    "method": "POST",
+    "url": "/api/users/login",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:07:00.319Z",
+    "method": "POST",
+    "url": "/api/auth/login",
+    "status": 404,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "2ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:53.963Z",
+    "method": "POST",
+    "url": "/api/users/login",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:37.120Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "3ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:37.092Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "9ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:37.009Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "21ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:36.909Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "21ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:36.819Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:36.752Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "29ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:36.659Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "12ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:36.588Z",
+    "method": "GET",
+    "url": "/api/admin/users",
+    "status": 401,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "34ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:35.799Z",
+    "method": "GET",
+    "url": "/api/admin/logs",
+    "status": 200,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "12ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:35.772Z",
+    "method": "GET",
+    "url": "/api/blogs",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "7ms"
+  },
+  {
+    "timestamp": "2026-03-01T08:06:35.749Z",
+    "method": "GET",
+    "url": "/api/trade-ideas",
+    "status": 304,
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "duration": "1ms"
+  }
+]

@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "title": "Reliance Industries: Strong Bullish Breakout",
+        "ticker": "RELIANCE",
+        "type": "Buy",
+        "horizon": "Long Term",
+        "target": "3200",
+        "stoploss": "2500",
+        "rating": "Strong Buy",
+        "isPremium": true,
+        "content": "Reliance is showing a strong breakout pattern on the weekly chart...",
+        "category": "Bluechip"
+    },
+    {
+        "id": 2,
+        "title": "Tata Motors: EV Growth Story Continues",
+        "ticker": "TATAMOTORS",
+        "type": "Buy",
+        "horizon": "Mid Term",
+        "target": "1100",
+        "stoploss": "850",
+        "rating": "Buy",
+        "isPremium": false,
+        "content": "Tata Motors is leading the EV revolution in India...",
+        "category": "Automobile"
+    }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1672531200000,
+    "name": "System Admin",
+    "email": "admin@liquide.com",
+    "password": "$2a$10$7vR5C8X7X8X7X8X7X8X7XeU8F8F8F8F8F8F8F8F8F8F8F8F8F8F8F",
+    "mobile": "9999999999",
+    "role": "admin",
+    "subscription": "premium",
+    "createdAt": "2026-03-01T07:00:00.000Z"
+  },
+  {
+    "id": 1772351324798,
+    "name": "New Admin",
+    "email": "newadmin@liquide.com",
+    "password": "$2b$10$5TpSmt190rzOJhzumrmCT.lTF2joxS62W88YIhNJ8d.1Ildumg9xu",
+    "mobile": "1234123412",
+    "role": "user",
+    "subscription": "free",
+    "createdAt": "2026-03-01T07:48:44.798Z"
+  },
+  {
+    "id": 1772351467020,
+    "name": "Power Admin",
+    "email": "power@admin.com",
+    "password": "$2b$10$QRQqU8O6aO5YoH49Gib5b.ncBvESjtlXNYBtCKKpaUaEsqNxlrFiW",
+    "mobile": "1234123455",
+    "role": "user",
+    "subscription": "free",
+    "createdAt": "2026-03-01T07:51:07.020Z"
+  },
+  {
+    "id": 1772352510407,
+    "name": "",
+    "email": "admin",
+    "password": "$2b$10$4QuXHTL9L0x4emAYcymXxOVpEz1Z5.TK8ShDZ5awyIU9dC0oaPveS",
+    "mobile": "",
+    "role": "user",
+    "subscription": "free",
+    "status": "active",
+    "validUntil": "2027-03-01T08:08:30.407Z",
+    "createdAt": "2026-03-01T08:08:30.407Z"
+  },
+  {
+    "id": 1772352720095,
+    "name": "Muju Metar",
+    "email": "muzammilmetar82@gmail.com",
+    "password": "$2b$10$vm3ZrLMKQvhiwLoP8cQ4tu2rdfQEhP0LbKryyDUvR5uVFiu5kFyP6",
+    "mobile": "07874536227",
+    "role": "admin",
+    "subscription": "free",
+    "status": "active",
+    "validUntil": "2027-03-01T08:12:00.095Z",
+    "createdAt": "2026-03-01T08:12:00.095Z"
+  }
+]
