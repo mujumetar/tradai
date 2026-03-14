@@ -32,6 +32,25 @@ exports.getAcademy = async (req, res) => {
 // @desc    Get all trade ideas
 // @route   GET /api/trade-ideas
 exports.getTradeIdeas = async (req, res) => {
+    // ── Lazy Auto-Updater (Manual Cron Fix) ──────────────────────────────────
+    // On Vercel Hobby, we can't run background intervals. 
+    // Instead, whenever a user visits, we check if the data is stale.
+    try {
+        const lastIdea = await TradeIdea.findOne({ status: { $in: ['ACTIVE', 'TARGET1_HIT', 'TARGET2_HIT'] } })
+            .sort({ lastPriceUpdate: -1 });
+
+        const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
+        
+        if (!lastIdea || !lastIdea.lastPriceUpdate || lastIdea.lastPriceUpdate < fiveMinsAgo) {
+            const { runAutoUpdate } = require('../services/portfolioAutoUpdater');
+            // Run in background, don't await (so user doesn't wait)
+            runAutoUpdate().catch(err => console.error('[LazyUpdate] Error:', err.message));
+        }
+    } catch (err) {
+        console.error('[LazyUpdate] Check failed:', err.message);
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     const ideas = await TradeIdea.find().sort({ createdAt: -1 });
     const user = req.user;
 
