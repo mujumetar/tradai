@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import useSocket from "../hooks/useSocket";
 import api from "../utils/api";
+import { API_BASE_URL } from "../config";
 
 // ─── Modals ─────────────────────────────────────────────────────────────────
 
@@ -435,11 +436,9 @@ const StatCard = ({ label, value, sub, color = 'orange' }) => {
     );
 };
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
-
 const AdminDashboard = () => {
     const user = JSON.parse(localStorage.getItem('user')) || {};
-    const socket = useSocket(window.location.origin);
+    const socket = useSocket(API_BASE_URL || window.location.origin);
     const [notifications, setNotifications] = useState([]);
     const [activeTab, setActiveTab] = useState('analytics');
     const [users, setUsers] = useState([]);

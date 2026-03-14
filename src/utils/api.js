@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { DEVICE_FINGERPRINT } from './deviceFingerprint';
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: API_BASE_URL ? `${API_BASE_URL}/api` : '/api',
 });
 
 // Request interceptor - attach token + device fingerprint
