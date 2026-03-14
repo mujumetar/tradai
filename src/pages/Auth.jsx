@@ -54,10 +54,10 @@ const Auth = () => {
                 >
                     <div className="text-center mb-10">
                         <h1 className="text-4xl font-black mb-3">
-                            {isLogin ? "Welcome Back" : "Join liquide"}
+                            {isLogin ? "Welcome Back" : "Join TRADAI"}
                         </h1>
                         <p className="text-gray-500">
-                            {isLogin ? "Use admin@liquide.com / admin123" : "Start your wealth journey today"}
+                            {isLogin ? "Use admin@tradai.com / admin123" : "Start your wealth journey today"}
                         </p>
                     </div>
 

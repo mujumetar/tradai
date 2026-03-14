@@ -28,7 +28,7 @@ const seed = async () => {
     // Create Admin
     await User.create({
         name: 'muju (Admin)',
-        email: 'admin@liquide.com',
+        email: 'admin@tradai.com',
         password: 'admin123',
         role: 'admin',
         subscription: 'premium'
@@ -37,7 +37,7 @@ const seed = async () => {
     // Create Manager
     await User.create({
         name: 'Alice (Manager)',
-        email: 'manager@liquide.com',
+        email: 'manager@tradai.com',
         password: 'manager123',
         role: 'manager',
         subscription: 'premium'
@@ -46,7 +46,7 @@ const seed = async () => {
     // Create Support
     await User.create({
         name: 'Bob (Support)',
-        email: 'support@liquide.com',
+        email: 'support@tradai.com',
         password: 'support123',
         role: 'support',
         subscription: 'free'
@@ -59,7 +59,7 @@ const seed = async () => {
         {
             title: 'Why Nifty 50 is still bullish in 2025',
             content: 'Detailed analysis of Nifty 50 market trends...',
-            author: 'liquide Research',
+            author: 'TRADAI Research',
             date: 'Jan 15, 2025',
             category: 'Finance',
             isPremium: false
@@ -67,7 +67,7 @@ const seed = async () => {
         {
             title: 'Exclusive: Top 5 Mid-Cap Stocks for 2025',
             content: 'Premium content on top stock picks...',
-            author: 'liquide Research',
+            author: 'TRADAI Research',
             date: 'Feb 01, 2025',
             category: 'Finance',
             isPremium: true
@@ -101,7 +101,7 @@ const seed = async () => {
     console.log('Sample trade ideas seeded.');
 
     console.log('\n✅ Seeding complete!');
-    console.log('Admin credentials: admin@liquide.com / admin123');
+    console.log('Admin credentials: admin@tradai.com / admin123');
     process.exit(0);
 };
 

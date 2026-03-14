@@ -22,7 +22,7 @@ const Pricing = () => {
         setLoading(true);
         try {
             // 1. Create Simulated Order
-            const { data: order } = await api.post('/payments/create-order', { amount: 999, plan: 'liquide One' });
+            const { data: order } = await api.post('/payments/create-order', { amount: 999, plan: 'TRADAI One' });
 
             // 2. Simulate User Paying (Artificial Delay)
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -38,7 +38,7 @@ const Pricing = () => {
                 const refreshedUser = { ...user, subscription: 'premium' };
                 localStorage.setItem('user', JSON.stringify(refreshedUser));
                 setUser(refreshedUser);
-                alert("Subscription Upgraded Successfully! You now have access to liquide One.");
+                alert("Subscription Upgraded Successfully! You now have access to TRADAI One.");
                 // navigate('/academy');
             }
         } catch (err) {
@@ -64,13 +64,13 @@ const Pricing = () => {
             premium: false
         },
         {
-            name: "liquide One",
+            name: "TRADAI One",
             price: "₹999",
             period: "per quarter",
             desc: "Institutional-grade wealth management",
             features: [
                 "Priority Trade Ideas (Ai Research)",
-                "LiMo AI Personal Assistant",
+                "TRADAI AI Personal Assistant",
                 "Unlimited Portfolio Audits",
                 "Exclusive Academy Sessions",
                 "Dedicated Relationship Manager",
@@ -94,7 +94,7 @@ const Pricing = () => {
                     >
                         One Plan. <span className="text-gradient">Unlimited Superpowers.</span>
                     </motion.h1>
-                    <p className="text-xl text-gray-400">Choose the plan that fits your wealth journey. Upgrade to liquide One for the ultimate edge.</p>
+                    <p className="text-xl text-gray-400">Choose the plan that fits your wealth journey. Upgrade to TRADAI One for the ultimate edge.</p>
                 </div>
 
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-4">

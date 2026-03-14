@@ -10,7 +10,7 @@ const Footer = () => {
             { name: "Privacy Policy", href: "/privacy" },
         ],
         Products: [
-            { name: "liquide One", href: "/liquide-one" },
+            { name: "TRADAI One", href: "/liquide-one" },
             { name: "Calculators", href: "/calculators" },
             { name: "Wealth Management", href: "/wealth" },
         ],
@@ -30,9 +30,9 @@ const Footer = () => {
                     <div className="col-span-2 lg:col-span-2">
                         <Link to="/" className="flex items-center gap-2 mb-5 sm:mb-6">
                             <div className="w-8 h-8 bg-accent-gradient rounded-lg flex items-center justify-center font-bold text-black text-xl flex-shrink-0">
-                                L
+                                T
                             </div>
-                            <span className="text-2xl font-bold tracking-tight text-white">liquide</span>
+                            <span className="text-2xl font-bold tracking-tight text-white">TRADAI</span>
                         </Link>
                         <p className="text-gray-400 max-w-sm mb-6 sm:mb-8 text-sm leading-relaxed">
                             Empowering India's wealth journey through smart investment ideas,
@@ -79,7 +79,7 @@ const Footer = () => {
 
                 <div className="border-t border-white/10 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
                     <p className="text-gray-500 text-xs sm:text-sm">
-                        © 2026 liquide. All rights reserved. Ai Registered Research Analyst.
+                        © 2026 TRADAI. All rights reserved. Ai Registered Research Analyst.
                     </p>
                     <div className="flex gap-5 sm:gap-8">
                         <Link to="/terms" className="text-gray-500 hover:text-white text-xs sm:text-sm">Terms of Service</Link>

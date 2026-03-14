@@ -69,7 +69,7 @@ exports.authUser = async (req, res) => {
         if (fingerprint) {
             const isBanned = await DeviceBan.findOne({ fingerprint, isActive: true });
             if (isBanned) {
-                return res.status(403).json({ message: 'This device has been banned from accessing Liquide.' });
+                return res.status(403).json({ message: 'This device has been banned from accessing TRADAI.' });
             }
 
             // Track login device

@@ -29,7 +29,7 @@ const Hero = () => {
                         Invest with <span className="text-gradient block mt-1 sm:mt-2">Intelligence</span>
                     </h1>
                     <p className="text-base sm:text-xl text-gray-400 mb-8 sm:mb-10 max-w-lg leading-relaxed">
-                        liquide helps you build wealth with institutional-grade research,
+                        TRADAI helps you build wealth with institutional-grade research,
                         personalized trade ideas, and a powerful portfolio health checker.
                     </p>
 

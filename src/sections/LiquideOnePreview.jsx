@@ -24,7 +24,7 @@ const LiquideOnePreview = () => {
                             Premium Subscription
                         </div>
                         <h2 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-6 sm:mb-8">
-                            Experience <span className="text-gradient">liquide One</span>
+                            Experience <span className="text-gradient">TRADAI One</span>
                         </h2>
                         <p className="text-gray-400 text-base sm:text-lg mb-8 sm:mb-10">
                             Go beyond retail investing. Get institutional-grade research and

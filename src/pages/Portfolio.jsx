@@ -7,7 +7,9 @@ import {
     Globe, Lock
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
 import api from "../utils/api";
+import { API_BASE_URL } from "../config";
 
 // ── Currency formatters ──────────────────────────────────────────────────────
 const CURRENCIES = [
@@ -155,9 +157,12 @@ const CallCard = ({ call, currency, isLocked }) => {
                         { label: "T1", val: call.target1, color: "text-emerald-400" },
                         { label: "CMP", val: call.currentPrice || pnl.exitPrice, color: "text-amber-400" },
                     ].map(({ label, val, color }) => (
-                        <div key={label} className="bg-white/4 rounded-xl p-2.5 text-center">
+                        <div key={label} className="bg-white/4 rounded-xl p-2.5 text-center relative overflow-hidden group">
                             <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{label}</p>
                             <p className={`text-xs font-bold ${color}`}>₹{val?.toLocaleString("en-IN")}</p>
+                            {label === "CMP" && (
+                                <span className="absolute top-0 right-0 w-1 h-1 bg-emerald-500 rounded-full animate-ping opacity-75 m-1" />
+                            )}
                         </div>
                     ))}
                 </div>
@@ -289,6 +294,7 @@ const PortfolioView = () => {
     const [filter, setFilter] = useState("ALL");
     const [marketFilter, setMarketFilter] = useState("ALL"); // New multiple selector for Market
     const [refreshing, setRefreshing] = useState(false);
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
 
     const user = JSON.parse(localStorage.getItem("user") || "null");
     const isPremium = user?.subscriptionPlan && user.subscriptionPlan !== "free";
@@ -309,11 +315,49 @@ const PortfolioView = () => {
 
     useEffect(() => { load(); }, [load]);
 
-    // Auto-refresh every 90 seconds for live prices
+    // Live WebSockets for real-time updates
     useEffect(() => {
-        const t = setInterval(() => load(true), 90000);
+        // API_BASE_URL is usually empty in dev (handled by proxy)
+        const socketUrl = API_BASE_URL || window.location.origin;
+        const socket = io(socketUrl);
+
+        socket.on("connect", () => {
+            console.log("Portfolio Socket Connected");
+            setIsSocketConnected(true);
+        });
+
+        socket.on("disconnect", () => setIsSocketConnected(false));
+
+        socket.on("price_update", (data) => {
+            setCalls(currentCalls => {
+                return currentCalls.map(call => {
+                    if (call._id === data.id) {
+                        return { 
+                            ...call, 
+                            currentPrice: data.currentPrice, 
+                            status: data.status,
+                            lastPriceUpdate: data.lastUpdate
+                        };
+                    }
+                    return call;
+                });
+            });
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    // Auto-refresh every 90 seconds for live prices (Fallback)
+    useEffect(() => {
+        const t = setInterval(() => {
+            if (!isSocketConnected) {
+                load(true);
+            }
+        }, 90000);
         return () => clearInterval(t);
-    }, [load]);
+    }, [load, isSocketConnected]);
 
     const filtered = calls.filter(c => {
         if (marketFilter !== "ALL" && c.market?.toUpperCase() !== marketFilter) return false;
@@ -358,8 +402,20 @@ const PortfolioView = () => {
             {/* Page Header */}
             <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-black mb-2">Live <span style={{ background: "linear-gradient(135deg,#f97316,#eab308)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Portfolio</span></h2>
-                    <p className="text-gray-500 text-sm">Real-time tracked trade calls with live P&L • Auto-refreshes every 90s</p>
+                    <div className="flex items-center gap-2 mb-2">
+                        <h2 className="text-3xl md:text-4xl font-black">Live <span style={{ background: "linear-gradient(135deg,#f97316,#eab308)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Portfolio</span></h2>
+                        {isSocketConnected && (
+                            <motion.div 
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }}
+                                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20"
+                            >
+                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter">Live</span>
+                            </motion.div>
+                        )}
+                    </div>
+                    <p className="text-gray-500 text-sm">Real-time tracked trade calls with live P&L • {isSocketConnected ? "Streaming via Sockets" : "Polling fallback active (90s)"}</p>
                 </div>
 
                     <div className="flex items-center gap-3">

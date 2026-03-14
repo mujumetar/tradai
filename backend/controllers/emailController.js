@@ -41,7 +41,7 @@ exports.createTemplate = async (req, res) => {
 exports.seedTemplates = async (req, res) => {
     const samples = [
         {
-            name: 'Welcome to liquide',
+            name: 'Welcome to TRADAI',
             subject: 'Welcome to the Future of Trading, {{name}}!',
             html: '<h1>Welcome aboard!</h1><p>Hi {{name}}, we are excited to have you with us. Explore our AI-powered research and start trading smarter.</p>',
             description: 'Send to new signups',
@@ -156,7 +156,7 @@ exports.sendSingleEmail = async (req, res) => {
     const transporter = getTransporter();
 
     await transporter.sendMail({
-        from: process.env.EMAIL_FROM || `"liquide" <${process.env.SMTP_USER}>`,
+        from: `"TRADAI" <no-reply@liquide.com>`,
         to: user.email, subject: mergedSubject, html: mergedHtml
     });
 

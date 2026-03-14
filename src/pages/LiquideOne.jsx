@@ -65,7 +65,7 @@ const LiquideOne = () => {
                         transition={{ duration: 0.8 }}
                         className="inline-block px-4 py-2 rounded-full border border-accent-orange/20 bg-accent-orange/5 text-accent-orange font-bold text-sm mb-6"
                     >
-                        liquide ONE
+                        TRADAI ONE
                     </motion.div>
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
@@ -81,7 +81,7 @@ const LiquideOne = () => {
                         transition={{ delay: 0.4, duration: 0.8 }}
                         className="text-xl text-gray-400 max-w-3xl mx-auto mb-12"
                     >
-                        Experience the pinnacle of smart investing. liquide One is our flagship
+                        Experience the pinnacle of smart investing. TRADAI One is our flagship
                         subscription designed for serious investors who demand the best insights.
                     </motion.p>
                     <motion.button
@@ -89,7 +89,7 @@ const LiquideOne = () => {
                         whileTap={{ scale: 0.95 }}
                         className="bg-accent-gradient text-black px-10 py-5 rounded-2xl font-bold text-xl shadow-[0_0_30px_rgba(231,137,50,0.3)]"
                     >
-                        Get liquide One Now
+                        Get TRADAI One Now
                     </motion.button>
                 </div>
             </section>
@@ -124,11 +124,11 @@ const LiquideOne = () => {
             {/* Stats Table Section */}
             <section className="py-24 px-6">
                 <div className="max-w-5xl mx-auto text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-16">Why Users Trust <span className="text-gradient">liquide One</span></h2>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-16">Why Users Trust <span className="text-gradient">TRADAI One</span></h2>
                     <div className="bg-secondary rounded-[40px] border border-white/10 overflow-hidden">
                         <div className="grid grid-cols-2 border-b border-white/5">
                             <div className="p-8 font-bold border-r border-white/5">Features</div>
-                            <div className="p-8 font-bold text-accent-orange">liquide One</div>
+                            <div className="p-8 font-bold text-accent-orange">TRADAI One</div>
                         </div>
                         {[
                             "Institutional Grade Research",

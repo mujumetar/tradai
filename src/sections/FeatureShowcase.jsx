@@ -16,7 +16,7 @@ const features = [
         color: "from-blue-500/20"
     },
     {
-        title: "liquide One",
+        title: "TRADAI One",
         description: "The gold standard of investing. Access flagship wealth management, priority execution support, and exclusive market insights.",
         image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
         reverse: false,

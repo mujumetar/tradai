@@ -46,7 +46,7 @@ const TradeIdeas = () => {
                         >
                             Market <span className="text-gradient">Research</span>
                         </motion.h1>
-                        <p className="text-gray-400 text-lg max-w-2xl">Expert-curated trade ideas backed by institutional-grade research and LiMo AI. Ai Registered Advisory.</p>
+                        <p className="text-gray-400 text-lg max-w-2xl">Expert-curated trade ideas backed by institutional-grade research and TRADAI AI. Ai Registered Advisory.</p>
                     </div>
                 </div>
 
@@ -85,7 +85,7 @@ const TradeIdeas = () => {
                                         <div className="w-16 h-16 bg-accent-orange/20 rounded-full flex items-center justify-center mb-4">
                                             <Lock className="text-accent-orange" size={32} />
                                         </div>
-                                        <h3 className="text-xl font-bold mb-2">liquide One Exclusive</h3>
+                                        <h3 className="text-xl font-bold mb-2">TRADAI One Exclusive</h3>
                                         <p className="text-gray-400 text-sm mb-6">This research is restricted to premium members.</p>
                                         <Link to="/pricing" className="bg-accent-gradient text-black px-8 py-3 rounded-full font-bold hover:opacity-90 transition-opacity">
                                             Upgrade to Unlock

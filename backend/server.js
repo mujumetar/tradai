@@ -17,7 +17,7 @@ const { startAutoUpdater } = require('./services/portfolioAutoUpdater');
 
 // ── WebPush ─────────────────────────────────────────────────────────────────
 webpush.setVapidDetails(
-    'mailto:support@liquide.com',
+    'mailto:support@tradai.com',
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY
 );
@@ -56,7 +56,7 @@ const PORT = process.env.PORT || 5000;
 connectDB()
     .then(() => {
         console.log('MongoDB Connected');
-        startAutoUpdater();
+        startAutoUpdater(io);
         server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     })
     .catch((err) => {

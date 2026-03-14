@@ -85,7 +85,7 @@ function createApp(io = null) {
         }
         try {
             const { runAutoUpdate } = require('./services/portfolioAutoUpdater');
-            await runAutoUpdate();
+            await runAutoUpdate(req.io);
             res.json({ message: 'Price update complete' });
         } catch (err) {
             res.status(500).json({ message: err.message });
@@ -93,7 +93,7 @@ function createApp(io = null) {
     });
 
     app.get('/', (_req, res) => {
-        res.json({ message: 'liquide Backend API is running.' });
+        res.json({ message: 'TRADAI Backend API is running.' });
     });
 
     // ── Global error handler ────────────────────────────────────────────────

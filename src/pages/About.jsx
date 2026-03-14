@@ -42,11 +42,11 @@ const About = () => {
                         <div>
                             <h2 className="text-4xl font-bold mb-8">Our Journey</h2>
                             <p className="text-gray-400 text-lg leading-relaxed mb-6">
-                                Founded in 2021, liquide was born out of a simple observation: retail investors
+                                Founded in 2021, TRADAI was born out of a simple observation: retail investors
                                 lack the tools and experts that institutional giants take for granted.
                             </p>
                             <p className="text-gray-400 text-lg leading-relaxed">
-                                By combining advanced AI (LiMo) with human expertise from Ai-registered
+                                By combining advanced AI (TRADAI AI) with human expertise from Ai-registered
                                 analysts, we've built an ecosystem that empowers 3.5 million+ users to
                                 make data-driven decisions.
                             </p>
@@ -72,7 +72,7 @@ const About = () => {
                     </div>
 
                     <div className="mb-32">
-                        <h2 className="text-4xl font-bold text-center mb-16">The Brains Behind <span className="text-gradient">liquide</span></h2>
+                        <h2 className="text-4xl font-bold text-center mb-16">The Brains Behind <span className="text-gradient">TRADAI</span></h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {team.map((member, idx) => (
                                 <motion.div

@@ -114,7 +114,7 @@ const resolveStatus = (call, livePrice) => {
 };
 
 // ── Main runner ──────────────────────────────────────────────────────────────
-const runAutoUpdate = async () => {
+const runAutoUpdate = async (io = null) => {
     try {
         // Only process calls that are still live (not closed / SL hit)
         const activeCalls = await TradeIdea.find({
@@ -163,6 +163,17 @@ const runAutoUpdate = async () => {
                 if (newStatus !== call.status) {
                     console.log(`[Portfolio AutoUpdater] ${call.ticker}: ${call.status} → ${newStatus} (CMP: ${livePrice})`);
                 }
+
+                // If IO is available, push the real-time tick to any connected clients
+                if (io) {
+                    io.emit('price_update', {
+                        id: call._id,
+                        ticker: call.ticker,
+                        currentPrice: livePrice,
+                        status: newStatus,
+                        lastUpdate: new Date()
+                    });
+                }
             }
         });
 
@@ -176,12 +187,12 @@ const runAutoUpdate = async () => {
 };
 
 // ── Start scheduled updates ──────────────────────────────────────────────────
-const startAutoUpdater = () => {
+const startAutoUpdater = (io) => {
     console.log('[TradeIdea AutoUpdater] Started — checking every 60 seconds.');
     // Run once immediately after start
-    setTimeout(runAutoUpdate, 5000);
+    setTimeout(() => runAutoUpdate(io), 5000);
     // Then every 60 seconds
-    setInterval(runAutoUpdate, 60 * 1000);
+    setInterval(() => runAutoUpdate(io), 60 * 1000);
 };
 
 module.exports = { startAutoUpdater, runAutoUpdate, fetchLivePrice };

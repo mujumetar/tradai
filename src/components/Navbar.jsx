@@ -41,7 +41,7 @@ const Navbar = () => {
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "Blogs", href: "/blogs" },
-        { name: "liquide One", href: "/liquide-one" },
+        { name: "TRADAI One", href: "/liquide-one" },
         { name: "Research", href: "/research" },
         { name: "Pricing", href: "/pricing" },
         { name: "About", href: "/about" },
@@ -76,10 +76,10 @@ const Navbar = () => {
                     {/* ── Logo ── */}
                     <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group">
                         <div className="w-8 h-8 bg-accent-gradient rounded-xl flex items-center justify-center font-black text-black text-lg shadow-[0_0_20px_rgba(231,137,50,0.4)] group-hover:shadow-[0_0_30px_rgba(231,137,50,0.6)] transition-shadow">
-                            L
+                            T
                         </div>
                         <span className="text-xl font-black tracking-tight text-white">
-                            liquide
+                            TRADAI
                         </span>
                     </Link>
 
@@ -213,8 +213,8 @@ const Navbar = () => {
                             {/* Drawer Header */}
                             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07]">
                                 <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-                                    <div className="w-7 h-7 bg-accent-gradient rounded-lg flex items-center justify-center font-black text-black text-base">L</div>
-                                    <span className="font-black text-lg tracking-tight">liquide</span>
+                                    <div className="w-7 h-7 bg-accent-gradient rounded-lg flex items-center justify-center font-black text-black text-base">T</div>
+                                    <span className="font-black text-lg tracking-tight">TRADAI</span>
                                 </Link>
                                 <button onClick={() => setIsOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white transition-colors">
                                     <X size={18} />

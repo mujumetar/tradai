@@ -33,7 +33,7 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
         if (type === 'free') filter.subscription = 'free';
 
         const users = await User.find(filter).select('name email pushSubscriptions fcmTokens subscription');
-        
+
         // Initialize results counter
         const results = { sent: 0, failed: 0 };
 
@@ -103,33 +103,41 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
         }
 
         // ─── 3. Email Notifications ──────────────────────────────────────────
-        if (sendEmail && process.env.SMTP_USER && process.env.SMTP_USER !== 'your-email@gmail.com') {
+        const emailPromises = [];
+        if (sendEmail && process.env.SMTP_USER && process.env.SMTP_USER !== 'your-email@gmail.com' && process.env.SMTP_USER !== '') {
             const transporter = getTransporter();
             for (const user of users) {
-                transporter.sendMail({
-                    from: process.env.EMAIL_FROM || `"liquide" <${process.env.SMTP_USER}>`,
-                    to: user.email,
-                    subject: title,
-                    html: `
-                        <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                            <h2 style="color: #E78932;">${title}</h2>
-                            <p>${body.replace(/\n/g, '<br>')}</p>
-                            <a href="${process.env.FRONTEND_URL || 'https://tradais.vercel.app'}${url}" 
-                               style="display: inline-block; background: #E78932; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px;">
-                               View Details
-                            </a>
-                            <hr style="margin-top: 30px; border: 0; border-top: 1px solid #eee;">
-                            <p style="font-size: 12px; color: #777;">You are receiving this because you are a ${user.subscription} member of liquide.</p>
-                        </div>
-                    `
-                }).catch(err => console.error(`[Email Notification Error] ${user.email}:`, err.message));
+                emailPromises.push(
+                    transporter.sendMail({
+                        from: `"TRADAI" <no-reply@liquide.com>`,
+                        to: user.email,
+                        subject: title,
+                        html: `
+                            <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                                <h2 style="color: #E78932;">${title}</h2>
+                                <p>${body.replace(/\n/g, '<br>')}</p>
+                                <a href="${`https://ai-tradeai.vercel.app` || 'https://tradais.vercel.app'}${url}" 
+                                   style="display: inline-block; background: #E78932; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px;">
+                                    View Details
+                                </a>
+                                <hr style="margin-top: 30px; border: 0; border-top: 1px solid #eee;">
+                                <p style="font-size: 12px; color: #777;">You are receiving this because you are a ${user.subscription} member of TRADAI.</p>
+                            </div>
+                        `
+                    })
+                        .then(() => { results.sent++; })
+                        .catch(err => {
+                            results.failed++;
+                            console.error(`[Email Notification Error] ${user.email}:`, err.message);
+                        })
+                );
             }
         }
 
-        // Wait for all push notifications to be dispatched
-        await Promise.all([...pushPromises, ...fcmPromises]);
+        // Wait for all push and email notifications to be dispatched
+        await Promise.all([...pushPromises, ...fcmPromises, ...emailPromises]);
         console.log(`[NotificationService] Sent to ${users.length} users successfully (Type: ${type})`);
-        
+
         return {
             sent: results.sent,
             failed: results.failed,
