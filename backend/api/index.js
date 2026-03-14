@@ -18,11 +18,19 @@ webpush.setVapidDetails(
 const connectDB = require('../lib/db');
 const createApp = require('../createApp');
 
-// Build app once (serverless: module cached between warm invocations)
 const app = createApp(); // no io → safe no-op emitter
 
 // Export a handler that ensures DB is connected before processing
 module.exports = async (req, res) => {
-    await connectDB();
-    return app(req, res);
+    try {
+        await connectDB();
+        return app(req, res);
+    } catch (err) {
+        console.error('SERVERLESS_INVOCATION_CRASH:', err.message);
+        res.status(500).json({
+            error: 'Server Initialization Failed',
+            message: err.message,
+            tip: 'Check your MONGO_URI and environment variables in Vercel settings.'
+        });
+    }
 };
