@@ -5,11 +5,13 @@ import {
     Bell, ShieldX, CheckCircle, Download, X as CloseIcon, Trash2,
     BarChart2, Key, Edit2, TrendingUp, FileText, Zap, MessageSquare, Mail,
     StopCircle, Play, Copy, ExternalLink,
-    Globe, BellRing
+    Globe, BellRing, Menu, ChevronRight
 } from "lucide-react";
 import useSocket from "../hooks/useSocket";
 import api from "../utils/api";
 import { API_BASE_URL } from "../config";
+import { PERMISSIONS, hasPermission } from "../utils/rbac";
+import { cn } from "../utils/cn";
 
 // ─── Modals ─────────────────────────────────────────────────────────────────
 
@@ -145,16 +147,16 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
             : {
                 title: item?.title || '', ticker: item?.ticker || '', market: item?.market || 'NSE', type: item?.type || 'BUY',
                 entry: item?.entry || '', target: item?.target || '', target2: item?.target2 || '', target3: item?.target3 || '',
-                stopLoss: item?.stopLoss || '', portfolioAmount: item?.portfolioAmount || 100000, 
-                isPremium: item?.isPremium ?? true, status: item?.status || 'ACTIVE' 
-              }
+                stopLoss: item?.stopLoss || '', portfolioAmount: item?.portfolioAmount || 100000,
+                isPremium: item?.isPremium ?? true, status: item?.status || 'ACTIVE'
+            }
     );
     const [loading, setLoading] = useState(false);
     const [fetchingPrice, setFetchingPrice] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-    
+
     // eslint-disable-next-line
     const searchTimeout = useRef(null);
     const dropdownRef = useRef(null);
@@ -174,7 +176,7 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
     const handleSearchInput = (e) => {
         const val = e.target.value;
         setForm(p => ({ ...p, ticker: val }));
-        
+
         if (!val.trim()) {
             setSearchResults([]);
             setShowDropdown(false);
@@ -205,16 +207,16 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
         if (type === 'CRYPTOCURRENCY') mappedMarket = 'CRYPTO';
         else if (type === 'CURRENCY') mappedMarket = 'FOREX';
         else if (ex === 'BSE') mappedMarket = 'BSE';
-        else if (ex === 'NYQ' || ex === 'NMS' || ex === 'NGM') mappedMarket = 'US'; 
+        else if (ex === 'NYQ' || ex === 'NMS' || ex === 'NGM') mappedMarket = 'US';
         else if (ex === 'MCX') mappedMarket = 'MCX';
         else if (ex === 'NSE') mappedMarket = 'NSE';
         else mappedMarket = 'NSE'; // Default to NSE if unsure, but user can change it
 
-        setForm(p => ({ 
-            ...p, 
-            ticker: s.symbol, 
-            title: s.name, 
-            market: mappedMarket 
+        setForm(p => ({
+            ...p,
+            ticker: s.symbol,
+            title: s.name,
+            market: mappedMarket
         }));
         setShowDropdown(false);
         setSearchResults([]);
@@ -275,12 +277,12 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
                             <div className="grid grid-cols-2 gap-3 mb-3">
                                 <div className="col-span-2 md:col-span-1 relative">
                                     <label className="text-[10px] text-gray-500 uppercase block mb-1">Search Global Ticker (Yahoo Fin)</label>
-                                    <input 
-                                        className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" 
-                                        placeholder="Type to search (e.g. RELIANCE, BTC-USD)" 
-                                        value={form.ticker} 
-                                        onChange={handleSearchInput} 
-                                        required 
+                                    <input
+                                        className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500"
+                                        placeholder="Type to search (e.g. RELIANCE, BTC-USD)"
+                                        value={form.ticker}
+                                        onChange={handleSearchInput}
+                                        required
                                         autoComplete="off"
                                     />
                                     {showDropdown && (
@@ -291,8 +293,8 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
                                                 <div className="p-3 text-xs text-center text-gray-400">No results found</div>
                                             ) : (
                                                 searchResults.map((s, i) => (
-                                                    <div 
-                                                        key={`${s.symbol}-${i}`} 
+                                                    <div
+                                                        key={`${s.symbol}-${i}`}
                                                         className="p-3 hover:bg-orange-500/10 cursor-pointer border-b border-white/5 last:border-0 group transition-colors"
                                                         onClick={() => handleSelectResult(s)}
                                                     >
@@ -475,26 +477,26 @@ const AdminDashboard = () => {
     const [bulkEmailForm, setBulkEmailForm] = useState({ filter: 'all', templateId: '' });
     const [pushForm, setPushForm] = useState({ filter: 'all', title: '', body: '', url: '/research' });
     const [pushSending, setPushSending] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const addNotification = msg => setNotifications(p => [{ id: Date.now(), msg }, ...p].slice(0, 5));
 
+    const canAccess = (perm) => hasPermission(user, perm);
+
     const fetchAll = useCallback(async () => {
         try {
-            const isManagerOrAdmin = ['admin', 'manager'].includes(user.role);
-            const isSupport = ['support'].includes(user.role);
-
             const [u, b, t, l, a, k, d, em, tk, ud, p] = await Promise.all([
                 api.get('/admin/users').catch(() => ({ data: [] })),
-                isManagerOrAdmin ? api.get('/blogs') : Promise.resolve({ data: [] }),
-                isManagerOrAdmin ? api.get('/trade-ideas') : Promise.resolve({ data: [] }),
-                isManagerOrAdmin || user.role === 'admin' ? api.get('/admin/logs').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-                isManagerOrAdmin ? api.get('/admin/analytics').catch(() => ({ data: null })) : Promise.resolve({ data: null }),
-                user.role === 'admin' ? api.get('/admin/api-keys').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-                user.role === 'admin' ? api.get('/admin/devices').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-                isManagerOrAdmin ? api.get('/emails/templates').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-                api.get('/tickets').catch(() => ({ data: { tickets: [] } })),
-                user.role === 'admin' ? api.get('/admin/user-devices').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
-                user.role === 'admin' ? api.get('/admin/payments').catch(() => ({ data: [] })) : Promise.resolve({ data: [] })
+                canAccess(PERMISSIONS.MANAGE_BLOGS) ? api.get('/blogs') : Promise.resolve({ data: [] }),
+                canAccess(PERMISSIONS.MANAGE_TRADE_IDEAS) ? api.get('/trade-ideas') : Promise.resolve({ data: [] }),
+                canAccess(PERMISSIONS.VIEW_LOGS) ? api.get('/admin/logs').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+                canAccess(PERMISSIONS.VIEW_ANALYTICS) ? api.get('/admin/analytics').catch(() => ({ data: null })) : Promise.resolve({ data: null }),
+                canAccess(PERMISSIONS.MANAGE_API_KEYS) ? api.get('/admin/api-keys').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+                canAccess(PERMISSIONS.MANAGE_DEVICES) ? api.get('/admin/devices').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+                canAccess(PERMISSIONS.MANAGE_EMAILS) ? api.get('/emails/templates').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+                canAccess(PERMISSIONS.HANDLE_TICKETS) ? api.get('/tickets').catch(() => ({ data: { tickets: [] } })) : Promise.resolve({ data: { tickets: [] } }),
+                canAccess(PERMISSIONS.MANAGE_DEVICES) ? api.get('/admin/user-devices').catch(() => ({ data: [] })) : Promise.resolve({ data: [] }),
+                canAccess(PERMISSIONS.MANAGE_PAYMENTS) ? api.get('/admin/payments').catch(() => ({ data: [] })) : Promise.resolve({ data: [] })
             ]);
             setUsers(u.data);
             setBlogs(b.data);
@@ -580,21 +582,27 @@ const AdminDashboard = () => {
     const filteredUsers = users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase()));
 
     const allTabs = [
-        { id: 'analytics', icon: BarChart2, label: 'Analytics', roles: ['admin', 'manager'] },
-        { id: 'users', icon: Users, label: 'Users', roles: ['admin', 'manager', 'support'] },
-        { id: 'blogs', icon: FileText, label: 'Blogs', roles: ['admin', 'manager'] },
-        { id: 'trade-ideas', icon: TrendingUp, label: 'Trade Ideas', roles: ['admin', 'manager'] },
-        { id: 'support', icon: MessageSquare, label: 'Support', roles: ['admin', 'manager', 'support'] },
-        { id: 'emails', icon: Mail, label: 'Emails', roles: ['admin', 'manager'] },
-        { id: 'logs', icon: AlertCircle, label: 'Logs', roles: ['admin'] },
-        { id: 'payments', icon: CreditCard, label: 'Payments', roles: ['admin'] },
-        { id: 'api-keys', icon: Key, label: 'API Keys', roles: ['admin'] },
-        { id: 'push', icon: BellRing, label: 'Push', roles: ['admin', 'manager'] },
-        { id: 'devices', icon: ShieldX, label: 'Devices', roles: ['admin'] },
-        { id: 'settings', icon: Settings, label: 'Settings', roles: ['admin'] },
+        { id: 'analytics', icon: BarChart2, label: 'Analytics', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { id: 'users', icon: Users, label: 'Users', permission: PERMISSIONS.MANAGE_USERS },
+        { id: 'blogs', icon: FileText, label: 'Blogs', permission: PERMISSIONS.MANAGE_BLOGS },
+        { id: 'trade-ideas', icon: TrendingUp, label: 'Trade Ideas', permission: PERMISSIONS.MANAGE_TRADE_IDEAS },
+        { id: 'support', icon: MessageSquare, label: 'Support', permission: PERMISSIONS.HANDLE_TICKETS },
+        { id: 'emails', icon: Mail, label: 'Emails', permission: PERMISSIONS.MANAGE_EMAILS },
+        { id: 'logs', icon: AlertCircle, label: 'Logs', permission: PERMISSIONS.VIEW_LOGS },
+        { id: 'payments', icon: CreditCard, label: 'Payments', permission: PERMISSIONS.MANAGE_PAYMENTS },
+        { id: 'api-keys', icon: Key, label: 'API Keys', permission: PERMISSIONS.MANAGE_API_KEYS },
+        { id: 'push', icon: BellRing, label: 'Push', permission: PERMISSIONS.SEND_PUSH },
+        { id: 'devices', icon: ShieldX, label: 'Devices', permission: PERMISSIONS.MANAGE_DEVICES },
+        { id: 'settings', icon: Settings, label: 'Settings', permission: PERMISSIONS.SYSTEM_SETTINGS },
     ];
 
-    const tabs = allTabs.filter(t => t.roles.includes(user.role));
+    const tabs = allTabs.filter(t => canAccess(t.permission));
+
+    useEffect(() => {
+        if (!tabs.find(t => t.id === activeTab)) {
+            setActiveTab(tabs[0]?.id || 'analytics');
+        }
+    }, [tabs, activeTab]);
 
     // Support actions
     const handleTicketReply = async (e, id) => {
@@ -642,35 +650,86 @@ const AdminDashboard = () => {
     };
 
     return (
-        <main className="min-h-screen bg-black text-white flex">
-            {/* Sidebar */}
-            <div className="w-72 border-r border-white/5 p-6 flex flex-col">
-                <div className="flex items-center gap-3 mb-10 px-2">
-                    <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center font-black text-black text-lg">L</div>
-                    <span className="font-black text-xl tracking-tight">liquide <span className="text-gray-600 font-medium text-sm">ADMIN</span></span>
+        <main className="min-h-screen bg-black text-white flex flex-col lg:flex-row overflow-hidden">
+            {/* Mobile Header */}
+            <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-black border-b border-white/5 sticky top-0 z-[60]">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center font-black text-black">T</div>
+                    <span className="font-black text-lg">TRADAI Admin</span>
                 </div>
+                <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-white/5 rounded-lg">
+                    <Menu size={20} />
+                </button>
+            </div>
+
+            {/* Sidebar Overlay (Mobile) */}
+            <AnimatePresence>
+                {isSidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Sidebar */}
+            <motion.div
+                className={cn(
+                    "fixed lg:relative inset-y-0 left-0 w-72 bg-[#0c0c0c] border-r border-white/5 p-6 flex flex-col z-[80] transition-transform duration-300 lg:translate-x-0 overflow-y-auto",
+                    isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                )}
+            >
+                <div className="flex items-center justify-between lg:justify-start gap-3 mb-10 px-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center font-black text-black text-lg">T</div>
+                        <span className="font-black text-xl tracking-tight">TRADAI <span className="text-gray-600 font-medium text-sm">ADMIN</span></span>
+                    </div>
+                    <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-gray-500 hover:text-white">
+                        <CloseIcon size={20} />
+                    </button>
+                </div>
+
                 <nav className="flex flex-col gap-1 flex-1">
                     {tabs.map(tab => (
-                        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all ${activeTab === tab.id ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>
-                            <tab.icon size={18} />{tab.label}
+                        <button
+                            key={tab.id}
+                            onClick={() => { setActiveTab(tab.id); setIsSidebarOpen(false); }}
+                            className={cn(
+                                "flex items-center justify-between px-4 py-3.5 rounded-2xl font-semibold text-sm transition-all group touch-active",
+                                activeTab === tab.id
+                                    ? "bg-orange-500 text-black shadow-lg shadow-orange-500/10"
+                                    : "text-gray-500 hover:text-white hover:bg-white/5"
+                            )}
+                        >
+                            <div className="flex items-center gap-3">
+                                <tab.icon size={18} className={activeTab === tab.id ? "text-black" : "group-hover:text-orange-500 transition-colors"} />
+                                {tab.label}
+                            </div>
+                            <ChevronRight size={14} className={cn("opacity-0 transition-all", activeTab === tab.id ? "opacity-100 translate-x-0" : "group-hover:opacity-100 -translate-x-2")} />
                         </button>
                     ))}
                 </nav>
-                <div className="mt-6 p-4 bg-orange-500/10 rounded-2xl border border-orange-500/20">
-                    <p className="text-xs text-orange-400 font-bold uppercase tracking-wider mb-1">Live</p>
-                    <p className="text-lg font-bold">{viewers} viewers</p>
-                    <div className="w-2 h-2 rounded-full bg-green-500 inline-block ml-2 animate-pulse" />
+
+                <div className="mt-8 p-4 bg-orange-500/5 rounded-3xl border border-orange-500/10">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <p className="text-[10px] text-orange-400 font-black uppercase tracking-[0.2em]">Live Status</p>
+                    </div>
+                    <p className="text-xl font-black">{viewers}</p>
+                    <p className="text-[10px] text-gray-600 font-bold uppercase">Active Viewers</p>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-10">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <div>
-                        <h1 className="text-3xl font-black capitalize">{activeTab.replace('-', ' ')}</h1>
-                        <p className="text-gray-500 text-sm mt-1">liquide Admin Panel</p>
+                        <h1 className="text-3xl sm:text-4xl font-black capitalize tracking-tight">{activeTab.replace('-', ' ')}</h1>
+                        <p className="text-gray-500 text-xs sm:text-sm mt-1 font-medium italic">liquide Admin Panel</p>
                     </div>
                     <div className="flex items-center gap-3">
                         {activeTab === 'users' && (
@@ -706,13 +765,13 @@ const AdminDashboard = () => {
                 {/* ── Analytics Tab ── */}
                 {activeTab === 'analytics' && analytics && (
                     <div className="space-y-8">
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                             <StatCard label="Total Users" value={analytics.users.total} sub={`+${analytics.users.newToday} today`} color="blue" />
                             <StatCard label="Premium" value={analytics.users.premium} sub={`${analytics.users.free} free`} color="orange" />
                             <StatCard label="Revenue" value={`₹${analytics.revenue.total.toLocaleString()}`} color="green" />
                             <StatCard label="Banned" value={analytics.users.banned} color="red" />
                         </div>
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                             <StatCard label="New (7 days)" value={analytics.users.newThisWeek} color="blue" />
                             <StatCard label="New (30 days)" value={analytics.users.newThisMonth} color="blue" />
                             <StatCard label="Total Blogs" value={analytics.content.totalBlogs} color="orange" />
@@ -750,8 +809,8 @@ const AdminDashboard = () => {
                 {activeTab === 'analytics' && !analytics && <p className="text-gray-500">Loading analytics...</p>}
 
                 {/* ── Users Tab ── */}
-                {activeTab === 'users' && (
-                    <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                {activeTab === 'users' && canAccess(PERMISSIONS.MANAGE_USERS) && (
+                    <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
                         <table className="w-full text-sm">
                             <thead className="border-b border-white/5 text-gray-500 uppercase text-xs tracking-wider"><tr>
                                 <th className="text-left p-4">User</th><th className="text-left p-4">Subscription</th><th className="text-left p-4">Role</th><th className="text-right p-4">Actions</th>
@@ -788,8 +847,8 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Blogs Tab ── */}
-                {activeTab === 'blogs' && (
-                    <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                {activeTab === 'blogs' && canAccess(PERMISSIONS.MANAGE_BLOGS) && (
+                    <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
                         <table className="w-full text-sm">
                             <thead className="border-b border-white/5 text-gray-500 uppercase text-xs tracking-wider"><tr>
                                 <th className="text-left p-4">Title</th><th className="text-left p-4">Author</th><th className="text-left p-4">Access</th><th className="text-right p-4">Actions</th>
@@ -814,9 +873,9 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Trade Ideas Tab ── */}
-                {activeTab === 'trade-ideas' && (
+                {activeTab === 'trade-ideas' && canAccess(PERMISSIONS.MANAGE_TRADE_IDEAS) && (
                     <div className="space-y-6">
-                        <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                        <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
                             <table className="w-full text-sm">
                                 <thead className="border-b border-white/5 text-gray-500 uppercase text-xs tracking-wider"><tr>
                                     <th className="text-left p-4">Ticker / Title</th><th className="text-left p-4">Type</th><th className="text-left p-4">Entry / SL / T1</th><th className="text-left p-4">CMP</th><th className="p-4">P&L</th><th className="p-4">Status</th><th className="text-right p-4">Actions</th>
@@ -843,12 +902,11 @@ const AdminDashboard = () => {
                                                 </p>
                                             </td>
                                             <td className="p-4 text-center">
-                                                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                                                    t.status === 'ACTIVE' ? 'bg-blue-500/20 text-blue-400' :
+                                                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${t.status === 'ACTIVE' ? 'bg-blue-500/20 text-blue-400' :
                                                     t.status === 'SL_HIT' ? 'bg-red-500/20 text-red-400' :
-                                                    t.status?.includes('TARGET') ? 'bg-emerald-500/20 text-emerald-400' :
-                                                    'bg-gray-500/20 text-gray-400'
-                                                }`}>{t.status?.replace('_', ' ')}</span>
+                                                        t.status?.includes('TARGET') ? 'bg-emerald-500/20 text-emerald-400' :
+                                                            'bg-gray-500/20 text-gray-400'
+                                                    }`}>{t.status?.replace('_', ' ')}</span>
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -864,7 +922,7 @@ const AdminDashboard = () => {
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         {/* Close Call Modal */}
                         <AnimatePresence>
                             {closeModal && (
@@ -888,10 +946,10 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Logs Tab ── */}
-                {activeTab === 'logs' && (
+                {activeTab === 'logs' && canAccess(PERMISSIONS.VIEW_LOGS) && (
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-500">{logs.length} entries — live updates via WebSocket</p>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <p className="text-sm text-gray-500 font-medium">{logs.length} entries — real-time monitoring</p>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setLiveLogsPaused(p => !p)}
@@ -943,8 +1001,8 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Payments Tab ── */}
-                {activeTab === 'payments' && (
-                    <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                {activeTab === 'payments' && canAccess(PERMISSIONS.MANAGE_PAYMENTS) && (
+                    <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
                         <table className="w-full text-sm">
                             <thead className="border-b border-white/5 text-gray-500 uppercase text-xs tracking-wider"><tr>
                                 <th className="text-left p-4">User</th><th className="text-left p-4">Amount</th><th className="p-4">Plan</th><th className="p-4">Status</th><th className="p-4">Razorpay ID</th><th className="text-right p-4">Date</th>
@@ -974,7 +1032,7 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── API Keys Tab ── */}
-                {activeTab === 'api-keys' && (
+                {activeTab === 'api-keys' && canAccess(PERMISSIONS.MANAGE_API_KEYS) && (
                     <div className="space-y-6">
                         <form onSubmit={handleCreateKey} className="flex gap-3 flex-wrap">
                             <input value={newKeyName} onChange={e => setNewKeyName(e.target.value)} placeholder="Key name" required className="flex-1 min-w-40 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-500" />
@@ -985,7 +1043,7 @@ const AdminDashboard = () => {
                             </select>
                             <button type="submit" className="flex items-center gap-2 bg-orange-500 text-black font-bold px-5 py-3 rounded-xl text-sm hover:opacity-90"><Zap size={16} />Generate Key</button>
                         </form>
-                        <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                        <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
                             <table className="w-full text-sm">
                                 <thead className="border-b border-white/5 text-gray-500 uppercase text-xs tracking-wider"><tr>
                                     <th className="text-left p-4">Name</th><th className="text-left p-4">Key</th><th className="text-left p-4">Tier</th><th className="text-left p-4">Credits</th><th className="text-left p-4">Hits</th><th className="text-right p-4">Actions</th>
@@ -1036,14 +1094,14 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Devices Tab ── */}
-                {activeTab === 'devices' && (
-                    <div className="space-y-8">
+                {activeTab === 'devices' && canAccess(PERMISSIONS.MANAGE_DEVICES) && (
+                    <div className="space-y-10">
                         {/* 1. Recent Logins / User Devices */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2 mb-4">
                                 <Globe size={16} className="text-orange-500" /> Recent Logins & Devices
                             </h3>
-                            <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                            <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden shadow-2xl overflow-x-auto custom-scrollbar">
                                 <table className="w-full text-sm">
                                     <thead className="border-b border-white/5 text-gray-500 uppercase text-[10px] tracking-widest">
                                         <tr>
@@ -1156,7 +1214,7 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Support Tab ── */}
-                {activeTab === 'support' && (
+                {activeTab === 'support' && canAccess(PERMISSIONS.HANDLE_TICKETS) && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-1 border-r border-white/10 pr-6 overflow-y-auto max-h-[70vh] space-y-3">
                             {tickets.length === 0 && <p className="text-gray-500 text-sm">No tickets found.</p>}
@@ -1212,7 +1270,7 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Emails Tab ── */}
-                {activeTab === 'emails' && (
+                {activeTab === 'emails' && canAccess(PERMISSIONS.MANAGE_EMAILS) && (
                     <div className="space-y-6">
                         <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6">
                             <h3 className="font-bold mb-4 flex items-center gap-2"><Mail className="text-orange-400" size={18} /> Send Bulk Email Campaign</h3>
@@ -1272,7 +1330,7 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Push Tab ── */}
-                {activeTab === 'push' && (
+                {activeTab === 'push' && canAccess(PERMISSIONS.SEND_PUSH) && (
                     <div className="space-y-6">
                         <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-8 max-w-2xl">
                             <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
@@ -1341,7 +1399,7 @@ const AdminDashboard = () => {
                 )}
 
                 {/* ── Settings Tab ── */}
-                {activeTab === 'settings' && (
+                {activeTab === 'settings' && canAccess(PERMISSIONS.SYSTEM_SETTINGS) && (
                     <div className="max-w-md space-y-6">
                         <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6">
                             <h3 className="font-bold mb-4 flex items-center gap-2"><ShieldX className="text-red-400" size={18} />IP Access Control</h3>

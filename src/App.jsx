@@ -28,9 +28,11 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+import { ROLES, hasRole } from "./utils/rbac";
+
 const ProtectedAdmin = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !["admin", "manager", "support"].includes(user.role)) {
+  if (!user || !hasRole(user, [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPPORT])) {
     return <Navigate to="/auth" />;
   }
   return children;
