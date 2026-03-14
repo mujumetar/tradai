@@ -34,6 +34,9 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
 
         const users = await User.find(filter).select('name email pushSubscriptions fcmTokens subscription');
         
+        // Initialize results counter
+        const results = { sent: 0, failed: 0 };
+
         // ─── 1. Push Notifications (Web Push) ────────────────────────────────
         const pushPayload = JSON.stringify({
             id: Date.now(),
@@ -54,9 +57,12 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
             if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
                 user.pushSubscriptions.forEach(sub => {
                     pushPromises.push(
-                        webpush.sendNotification(sub, pushPayload).catch(err => {
-                            console.error(`[WebPush Error] ${user.email}:`, err.message);
-                        })
+                        webpush.sendNotification(sub, pushPayload)
+                            .then(() => { results.sent++; })
+                            .catch(err => {
+                                results.failed++;
+                                console.error(`[WebPush Error] ${user.email}:`, err.message);
+                            })
                     );
                 });
             }
@@ -82,19 +88,21 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
             }
         });
 
-        // Batch send FCM (up to 500 at a time is best, but here we just send all)
+        // Batch send FCM
         if (fcmMessages.length > 0 && firebaseAdmin) {
             fcmMessages.forEach(msg => {
                 fcmPromises.push(
-                    firebaseAdmin.messaging().send(msg).catch(err => {
-                        console.error(`[FCM Error]`, err.message);
-                        // If token is invalid, we could remove it here
-                    })
+                    firebaseAdmin.messaging().send(msg)
+                        .then(() => { results.sent++; })
+                        .catch(err => {
+                            results.failed++;
+                            console.error(`[FCM Error]`, err.message);
+                        })
                 );
             });
         }
 
-        // ─── 2. Email Notifications ──────────────────────────────────────────
+        // ─── 3. Email Notifications ──────────────────────────────────────────
         if (sendEmail && process.env.SMTP_USER && process.env.SMTP_USER !== 'your-email@gmail.com') {
             const transporter = getTransporter();
             for (const user of users) {

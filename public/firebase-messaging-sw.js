@@ -10,8 +10,9 @@ firebase.initializeApp({
     authDomain: "tradai-68b07.firebaseapp.com",
     projectId: "tradai-68b07",
     storageBucket: "tradai-68b07.firebasestorage.app",
-    messagingSenderId: "1:166225729814:web:1964a2aaf3f8e077731837",
-    appId: "G-LFDH7QY04Z"
+    messagingSenderId: "166225729814",
+    appId: "1:166225729814:web:1964a2aaf3f8e077731837",
+    measurementId: "G-LFDH7QY04Z"
 });
 
 const messaging = firebase.messaging();

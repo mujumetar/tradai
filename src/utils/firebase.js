@@ -9,12 +9,13 @@ import api from "./api";
  * Project Settings -> General -> Your apps -> Web apps
  */
 const firebaseConfig = {
-    apiKey: "AIzaSyCvWGmzMpLCJO73-diWhqEZxKo_xrG1mjw",
-    authDomain: "tradai-68b07.firebaseapp.com",
-    projectId: "tradai-68b07",
-    storageBucket: "tradai-68b07.firebasestorage.app",
-    messagingSenderId: "1:166225729814:web:1964a2aaf3f8e077731837",
-    appId: "G-LFDH7QY04Z"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCvWGmzMpLCJO73-diWhqEZxKo_xrG1mjw",
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "tradai-68b07.firebaseapp.com",
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "tradai-68b07",
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "tradai-68b07.firebasestorage.app",
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "166225729814",
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:166225729814:web:1964a2aaf3f8e077731837",
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-LFDH7QY04Z"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -29,7 +30,7 @@ export const requestFcmToken = async () => {
         if (permission === "granted") {
             const token = await getToken(messaging, {
                 // Get this from: Firebase Console -> Project Settings -> Cloud Messaging -> Web Push certificates
-                vapidKey: "YOUR_VAPID_BROWSER_KEY"
+                vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || "YOUR_VAPID_BROWSER_KEY"
             });
 
             if (token) {
