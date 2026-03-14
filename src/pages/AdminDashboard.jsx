@@ -12,6 +12,7 @@ import api from "../utils/api";
 import { API_BASE_URL } from "../config";
 import { PERMISSIONS, hasPermission } from "../utils/rbac";
 import { cn } from "../utils/cn";
+import { useSearchParams } from "react-router-dom";
 
 // ─── Modals ─────────────────────────────────────────────────────────────────
 
@@ -442,7 +443,9 @@ const AdminDashboard = () => {
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const socket = useSocket(API_BASE_URL || window.location.origin);
     const [notifications, setNotifications] = useState([]);
-    const [activeTab, setActiveTab] = useState('analytics');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'analytics';
+    const setActiveTab = (tab) => setSearchParams({ tab });
     const [users, setUsers] = useState([]);
     const [blogs, setBlogs] = useState([]);
     const [tradeIdeas, setTradeIdeas] = useState([]);
@@ -599,10 +602,10 @@ const AdminDashboard = () => {
     const tabs = allTabs.filter(t => canAccess(t.permission));
 
     useEffect(() => {
-        if (!tabs.find(t => t.id === activeTab)) {
-            setActiveTab(tabs[0]?.id || 'analytics');
+        if (tabs.length > 0 && !tabs.find(t => t.id === activeTab)) {
+            setActiveTab(tabs[0].id);
         }
-    }, [tabs, activeTab]);
+    }, [tabs, activeTab, setSearchParams]);
 
     // Support actions
     const handleTicketReply = async (e, id) => {
