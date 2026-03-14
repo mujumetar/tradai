@@ -1,3 +1,8 @@
+import { precacheAndRoute } from 'workbox-precaching';
+
+// Inject manifest for PWA precaching
+precacheAndRoute(self.__WB_MANIFEST || []);
+
 self.addEventListener('push', (event) => {
     console.log('[SW] Push Received. Data:', event.data ? event.data.text() : 'No data');
     
