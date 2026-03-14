@@ -10,11 +10,16 @@ const LimoAI = () => {
     ]);
     const [inputValue, setInputValue] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const messagesEndRef = useRef(null);
-
+    const containerRef = useRef(null);
     const isFirstMount = useRef(true);
+
     const scrollToBottom = (behavior = "smooth") => {
-        messagesEndRef.current?.scrollIntoView({ behavior });
+        if (containerRef.current) {
+            containerRef.current.scrollTo({
+                top: containerRef.current.scrollHeight,
+                behavior
+            });
+        }
     };
 
     useEffect(() => {
@@ -146,7 +151,10 @@ const LimoAI = () => {
                             </div>
                         </div>
 
-                        <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                        <div 
+                            ref={containerRef}
+                            className="space-y-6 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+                        >
                             {messages.map((msg, idx) => (
                                 <div key={idx} className={`flex gap-4 ${msg.sender === 'limo' ? 'flex-row-reverse' : ''}`}>
                                     <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${msg.sender === 'limo' ? 'bg-purple-500 font-black italic text-black text-[10px]' : 'bg-gray-800'}`}>
@@ -171,8 +179,8 @@ const LimoAI = () => {
                                     </div>
                                 </div>
                             )}
-                            <div ref={messagesEndRef} />
-                        </div>
+                             {/* invisible anchor removed in favor of scrollTo */}
+                         </div>
 
                         <div className="mt-10 pt-6 border-t border-white/5">
                             <div className="bg-white/5 rounded-full px-4 py-2 flex items-center justify-between border border-white/5 focus-within:border-purple-500/50 transition-colors">

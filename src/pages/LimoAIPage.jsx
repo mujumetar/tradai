@@ -100,7 +100,8 @@ const LimoAIPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showPremiumModal, setShowPremiumModal] = useState(false);
     const [usage, setUsage] = useState(getDailyUsage);
-    const messagesEndRef = useRef(null);
+    const containerRef = useRef(null);
+    const isFirstMount = useRef(true);
 
     const chatsLeft = isPremium ? Infinity : Math.max(0, FREE_LIMIT - usage.count);
     const isLimitReached = !isPremium && usage.count >= FREE_LIMIT;
@@ -108,7 +109,16 @@ const LimoAIPage = () => {
     const INITIAL_MESSAGE = { sender: "limo", text: "Hi! I'm LiMo, your AI market research assistant. Ask me anything about stocks, crypto, or market trends." };
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (isFirstMount.current) {
+            isFirstMount.current = false;
+            return;
+        }
+        if (containerRef.current) {
+            containerRef.current.scrollTo({
+                top: containerRef.current.scrollHeight,
+                behavior: "smooth"
+            });
+        }
     }, [messages, isLoading]);
 
     const clearChat = () => {
@@ -223,7 +233,10 @@ const LimoAIPage = () => {
             </div>
 
             {/* Messages area */}
-            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5 scroll-smooth">
+            <div 
+                ref={containerRef}
+                className="flex-1 overflow-y-auto px-4 py-6 space-y-5 scroll-smooth"
+            >
                 <div className="max-w-3xl mx-auto space-y-5">
                     {messages.map((msg, idx) => (
                         <motion.div
@@ -259,7 +272,7 @@ const LimoAIPage = () => {
                             </div>
                         </motion.div>
                     )}
-                    <div ref={messagesEndRef} />
+                    {/* invisible anchor removed in favor of scrollTo */}
                 </div>
             </div>
 

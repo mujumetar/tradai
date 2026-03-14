@@ -49,9 +49,9 @@ const Footer = () => {
                                     key={label}
                                     href="#"
                                     aria-label={label}
-                                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/40 transition-all"
+                                    className="w-10 h-10 sm:w-10 sm:h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/40 transition-all touch-active"
                                 >
-                                    <Icon size={16} />
+                                    <Icon size={18} />
                                 </a>
                             ))}
                         </div>
@@ -66,7 +66,7 @@ const Footer = () => {
                                     <li key={link.name}>
                                         <Link
                                             to={link.href}
-                                            className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm"
+                                            className="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm py-1 block touch-active"
                                         >
                                             {link.name}
                                         </Link>

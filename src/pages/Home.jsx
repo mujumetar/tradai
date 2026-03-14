@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Hero from "../sections/Hero";
 import Ticker from "../components/Ticker";
@@ -8,6 +9,10 @@ import LiquideOnePreview from "../sections/LiquideOnePreview";
 import Footer from "../components/Footer";
 
 const Home = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <main className="min-h-screen bg-black text-white">
             <Navbar />

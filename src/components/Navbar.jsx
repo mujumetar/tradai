@@ -68,7 +68,7 @@ const Navbar = () => {
             <nav className={cn(
                 "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
                 scrolled
-                    ? "bg-black/80 backdrop-blur-xl border-b border-white/[0.07] shadow-[0_0_40px_rgba(0,0,0,0.5)]"
+                    ? "bg-black/80 backdrop-blur-xl  shadow-[0_0_40px_rgba(0,0,0,0.5)]"
                     : "bg-transparent"
             )}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-18 flex items-center justify-between gap-4">
@@ -216,8 +216,8 @@ const Navbar = () => {
                                     <div className="w-7 h-7 bg-accent-gradient rounded-lg flex items-center justify-center font-black text-black text-base">T</div>
                                     <span className="font-black text-lg tracking-tight">TRADAI</span>
                                 </Link>
-                                <button onClick={() => setIsOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white transition-colors">
-                                    <X size={18} />
+                                <button onClick={() => setIsOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white transition-colors touch-active">
+                                    <X size={20} />
                                 </button>
                             </div>
 
@@ -249,7 +249,7 @@ const Navbar = () => {
                                             to={link.href}
                                             onClick={() => setIsOpen(false)}
                                             className={cn(
-                                                "flex items-center justify-between px-4 py-3 rounded-2xl font-semibold text-sm transition-all",
+                                                "flex items-center justify-between px-4 py-3.5 rounded-2xl font-semibold text-sm transition-all touch-active",
                                                 isActive(link.href)
                                                     ? "bg-white/10 text-white"
                                                     : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -264,24 +264,24 @@ const Navbar = () => {
                                 {/* User Actions */}
                                 {isLoggedIn ? (
                                     <div className="pt-3 mt-3 border-t border-white/[0.07] space-y-1">
-                                        <Link to="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                                        <Link to="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-semibold text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all touch-active">
                                             <LayoutDashboard size={16} /> Dashboard
                                         </Link>
                                         {isStaff && (
-                                            <Link to="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                                            <Link to="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-semibold text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all touch-active">
                                                 <Shield size={16} /> Admin Panel
                                             </Link>
                                         )}
-                                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all">
+                                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-semibold text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all touch-active">
                                             <LogOut size={16} /> Logout
                                         </button>
                                     </div>
                                 ) : (
                                     <div className="pt-3 mt-3 border-t border-white/[0.07] space-y-2">
-                                        <Link to="/auth" onClick={() => setIsOpen(false)} className="flex items-center justify-center px-4 py-3 rounded-2xl font-bold text-sm text-gray-300 border border-white/10 hover:bg-white/5 transition-all">
+                                        <Link to="/auth" onClick={() => setIsOpen(false)} className="flex items-center justify-center px-4 py-3.5 rounded-2xl font-bold text-sm text-gray-300 border border-white/10 hover:bg-white/5 transition-all touch-active">
                                             Login
                                         </Link>
-                                        <Link to="/auth" onClick={() => setIsOpen(false)} className="flex items-center justify-center px-4 py-3 rounded-2xl font-bold text-sm bg-accent-gradient text-black shadow-[0_4px_15px_rgba(231,137,50,0.3)] hover:opacity-90 transition-opacity">
+                                        <Link to="/auth" onClick={() => setIsOpen(false)} className="flex items-center justify-center px-4 py-3.5 rounded-2xl font-bold text-sm bg-accent-gradient text-black shadow-[0_4px_15px_rgba(231,137,50,0.3)] hover:opacity-90 transition-opacity touch-active">
                                             Get Started
                                         </Link>
                                     </div>
