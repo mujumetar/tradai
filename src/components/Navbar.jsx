@@ -4,6 +4,9 @@ import { Menu, X, ChevronRight, User, LogOut, LayoutDashboard, Shield, TrendingU
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../utils/cn";
 import PWAInstallButton from "./PWAInstallButton";
+import NotificationAccessModal from "./NotificationAccessModal";
+import { subscribeToPush, getPushSubscription } from "../utils/pushNotifications";
+import { requestFcmToken } from "../utils/firebase";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -37,6 +40,68 @@ const Navbar = () => {
         document.body.style.overflow = isOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [isOpen]);
+
+    // ── Push Notification Logic ──
+    const [showPushModal, setShowPushModal] = useState(false);
+    const [pushLoading, setPushLoading] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(false);
+
+    useEffect(() => {
+        const userStr = localStorage.getItem("user");
+        if (!userStr) return;
+
+        const checkSubscription = async () => {
+            const currentPermission = typeof Notification !== "undefined" ? Notification.permission : "default";
+            if (currentPermission === "denied") return;
+
+            try {
+                const sub = await getPushSubscription();
+                const subscribed = !!sub;
+                setIsSubscribed(subscribed);
+
+                if (!subscribed && currentPermission !== "denied" && !sessionStorage.getItem('push_modal_dismissed')) {
+                    setTimeout(() => setShowPushModal(true), 3000);
+                }
+            } catch (err) {
+                console.warn("Push check failed:", err);
+            }
+        };
+
+        checkSubscription();
+    }, [location.pathname]);
+
+    const handlePushToggle = async () => {
+        setPushLoading(true);
+        try {
+            let webPushOk = false;
+            try {
+                const sub = await subscribeToPush();
+                if (sub) webPushOk = true;
+            } catch (wpErr) {
+                console.warn("Web Push subscribe failed:", wpErr);
+            }
+
+            await requestFcmToken();
+
+            const newPerm = typeof Notification !== "undefined" ? Notification.permission : "default";
+            if (newPerm === "granted" && webPushOk) {
+                setIsSubscribed(true);
+                setShowPushModal(false);
+                sessionStorage.setItem('push_modal_dismissed', 'true');
+            } else if (newPerm === "denied") {
+                alert("Notifications were blocked. Please enable them in settings.");
+            }
+        } catch (err) {
+            console.error("Push toggle failed:", err);
+        } finally {
+            setPushLoading(false);
+        }
+    };
+
+    const handleModalDecline = () => {
+        setShowPushModal(false);
+        sessionStorage.setItem('push_modal_dismissed', 'true');
+    };
 
     const navLinks = [
         { name: "Home", href: "/" },
@@ -296,6 +361,12 @@ const Navbar = () => {
                     </>
                 )}
             </AnimatePresence>
+            <NotificationAccessModal
+                show={showPushModal}
+                loading={pushLoading}
+                onAccept={handlePushToggle}
+                onDecline={handleModalDecline}
+            />
         </>
     );
 };

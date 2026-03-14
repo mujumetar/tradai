@@ -19,13 +19,21 @@ function initFirebase() {
         let serviceAccount;
 
         if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-            // Can be a JSON string or a Base64 encoded JSON string
-            const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+            const raw = process.env.FIREBASE_SERVICE_ACCOUNT.trim();
+            // Try Base64 first then JSON
             try {
-                serviceAccount = JSON.parse(raw);
+                // Remove potential quotes adding during env editing
+                const cleanRaw = raw.replace(/^['"]|['"]$/g, '');
+                const decoded = Buffer.from(cleanRaw, 'base64').toString('utf8');
+                serviceAccount = JSON.parse(decoded);
+                console.log('Firebase: Decoded Base64 service account');
             } catch (e) {
-                // If not JSON, try base64
-                serviceAccount = JSON.parse(Buffer.from(raw, 'base64').toString());
+                try {
+                    serviceAccount = JSON.parse(raw);
+                    console.log('Firebase: Parsed raw JSON service account');
+                } catch (e2) {
+                    console.error('Firebase: Failed to parse FIREBASE_SERVICE_ACCOUNT. Check .env formatting.');
+                }
             }
         } else {
             // Fallback to local file
@@ -39,6 +47,11 @@ function initFirebase() {
         }
 
         if (serviceAccount) {
+            // Fix for PEM formatting issue in env variables
+            if (serviceAccount.private_key) {
+                serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+            }
+            
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount)
             });

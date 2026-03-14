@@ -14,7 +14,8 @@ const tradeIdeaSchema = new mongoose.Schema({
     target3: { type: Number },
     
     // Portfolio tracking fields
-    portfolioAmount: { type: Number, default: 100000 },
+    quantity: { type: Number, default: 1 }, 
+    portfolioAmount: { type: Number }, // Deprecated legacy field
     currentPrice: { type: Number },
     lastPriceUpdate: { type: Date },
     closingPrice: { type: Number },
@@ -56,7 +57,8 @@ tradeIdeaSchema.virtual('pnl').get(function() {
         }
     }
 
-    const qty = this.portfolioAmount / this.entry;
+    const qty = this.quantity || (this.portfolioAmount ? this.portfolioAmount / this.entry : 1);
+    const investedAmount = qty * this.entry;
     
     // Profit per unit
     const diff = this.type === 'BUY' ? (cmp - this.entry) : (this.entry - cmp);
@@ -66,6 +68,7 @@ tradeIdeaSchema.virtual('pnl').get(function() {
     
     return {
         qty: parseFloat(qty.toFixed(2)),
+        investedAmount: parseFloat(investedAmount.toFixed(2)),
         rupees: parseFloat(rupees.toFixed(2)),
         percent: parseFloat(percent.toFixed(2)),
         isProfit: rupees >= 0,

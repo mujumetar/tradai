@@ -12,6 +12,8 @@ import TradeIdeas from "./pages/TradeIdeas";
 import Pricing from "./pages/Pricing";
 import UserDashboard from "./pages/UserDashboard";
 import LimoAIPage from "./pages/LimoAIPage";
+import { useEffect } from "react";
+import { onForegroundMessage } from "./utils/firebase";
 
 import { Navigate } from "react-router-dom";
 import Support from "./pages/Support";
@@ -39,6 +41,10 @@ const ProtectedAdmin = ({ children }) => {
 };
 
 function App() {
+  useEffect(() => {
+    onForegroundMessage();
+  }, []);
+
   return (
     <Router>
       <ReloadPrompt />

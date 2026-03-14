@@ -148,7 +148,7 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
             : {
                 title: item?.title || '', ticker: item?.ticker || '', market: item?.market || 'NSE', type: item?.type || 'BUY',
                 entry: item?.entry || '', target: item?.target || '', target2: item?.target2 || '', target3: item?.target3 || '',
-                stopLoss: item?.stopLoss || '', portfolioAmount: item?.portfolioAmount || 100000,
+                stopLoss: item?.stopLoss || '', quantity: item?.quantity || 1,
                 isPremium: item?.isPremium ?? true, status: item?.status || 'ACTIVE'
             }
     );
@@ -344,8 +344,8 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
                                 <div><label className="text-[10px] text-gray-500 uppercase block mb-1">Target 3 (opt)</label><input type="number" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" placeholder="0.00" value={form.target3} onChange={set('target3')} /></div>
                             </div>
                             <div className="w-full mb-3">
-                                <label className="text-[10px] text-gray-500 uppercase block mb-1">Tracking Amount (min ₹1,00,000)</label>
-                                <input type="number" min="100000" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="100000" value={form.portfolioAmount} onChange={set('portfolioAmount')} required />
+                                <label className="text-[10px] text-gray-500 uppercase block mb-1">Quantity (Lots/Coins/Shares)</label>
+                                <input type="number" min="0.00001" step="any" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" placeholder="e.g. 10" value={form.quantity} onChange={set('quantity')} required />
                             </div>
                             <div className="flex gap-3">
                                 <select className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" value={form.type} onChange={set('type')}>

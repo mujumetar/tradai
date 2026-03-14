@@ -39,11 +39,12 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
 
         // ─── 1. Push Notifications (Web Push) ────────────────────────────────
         const pushPayload = JSON.stringify({
-            id: Date.now(),
-            title: title,
-            body: body,
+            notification: {
+                title: title,
+                body: body
+            },
             data: {
-                url: url,
+                url: url
             }
         });
         const pushPromises = [];
@@ -51,10 +52,13 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
         // ─── 2. FCM Notifications (Firebase) ───────────────────────────────
         const fcmPromises = [];
         const fcmMessages = [];
+        let totalSubscriptions = 0;
+        let totalFcmTokens = 0;
 
         users.forEach(user => {
             // Web Push
             if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
+                totalSubscriptions += user.pushSubscriptions.length;
                 user.pushSubscriptions.forEach(sub => {
                     pushPromises.push(
                         webpush.sendNotification(sub, pushPayload)
@@ -68,25 +72,31 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
             }
 
             // FCM
-            if (user.fcmTokens && user.fcmTokens.length > 0 && firebaseAdmin) {
-                user.fcmTokens.forEach(token => {
-                    fcmMessages.push({
-                        token: token,
-                        notification: { title, body },
-                        data: { url },
-                        webpush: {
-                            fcmOptions: { link: url },
-                            notification: {
-                                actions: [
-                                    { action: 'view', title: 'View Research' },
-                                    { action: 'close', title: 'Dismiss' }
-                                ]
+            if (user.fcmTokens && user.fcmTokens.length > 0) {
+                totalFcmTokens += user.fcmTokens.length;
+                if (firebaseAdmin) {
+                    user.fcmTokens.forEach(token => {
+                        fcmMessages.push({
+                            token: token,
+                            notification: { title, body },
+                            data: { url },
+                            webpush: {
+                                fcmOptions: { link: url },
+                                notification: {
+                                    actions: [
+                                        { action: 'view', title: 'View Research' },
+                                        { action: 'close', title: 'Dismiss' }
+                                    ]
+                                }
                             }
-                        }
+                        });
                     });
-                });
+                }
             }
         });
+
+        console.log(`[NotificationService] Found ${totalSubscriptions} WebPush subs and ${totalFcmTokens} FCM tokens for ${users.length} users.`);
+
 
         // Batch send FCM
         if (fcmMessages.length > 0 && firebaseAdmin) {

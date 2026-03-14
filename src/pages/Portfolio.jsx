@@ -79,8 +79,10 @@ const CallCard = ({ call, currency, isLocked }) => {
     const targetHit = call.status?.includes("TARGET");
 
     const entryVsReal = call.currentPrice
-        ? (((call.currentPrice - call.entryPrice) / call.entryPrice) * 100 * (call.type === "BUY" ? 1 : -1)).toFixed(2)
+        ? (((call.currentPrice - call.entry) / call.entry) * 100 * (call.type === "BUY" ? 1 : -1)).toFixed(2)
         : null;
+
+    const actualInvested = pnl.investedAmount || (call.quantity ? call.quantity * call.entry : (call.portfolioAmount || 0));
 
     return (
         <motion.div
@@ -112,6 +114,11 @@ const CallCard = ({ call, currency, isLocked }) => {
                                 {call.type}
                             </span>
                             <span className="text-xs text-gray-600 bg-white/5 px-2 py-0.5 rounded-full">{call.market}</span>
+                            {(pnl.qty && pnl.qty > 0) ? (
+                                <span className="text-[10px] text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full border border-orange-500/20 font-bold ml-auto">
+                                    Qty: {pnl.qty}
+                                </span>
+                            ) : null}
                         </div>
                         <p className="text-gray-400 text-sm line-clamp-1">{call.title}</p>
                     </div>
@@ -135,9 +142,9 @@ const CallCard = ({ call, currency, isLocked }) => {
                     <div className="text-right">
                         <p className="text-xs text-gray-500">Current Value</p>
                         <p className={`text-sm font-bold ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
-                            ₹{((call.portfolioAmount || 100000) + (pnl.rupees || 0)).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                            ₹{(actualInvested + (pnl.rupees || 0)).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">Invested: ₹{(call.portfolioAmount || 100000).toLocaleString("en-IN")}</p>
+                        <p className="text-xs text-gray-500 mt-1">Invested: ₹{actualInvested.toLocaleString("en-IN")}</p>
                     </div>
                 </div>
 
@@ -180,7 +187,7 @@ const CallCard = ({ call, currency, isLocked }) => {
                 {/* Price Progress */}
                 {call.currentPrice && (
                     <PriceProgress
-                        entry={call.entryPrice}
+                        entry={call.entry}
                         sl={call.stopLoss}
                         t1={call.target1}
                         current={call.currentPrice}
@@ -384,7 +391,7 @@ const PortfolioView = () => {
 
     const s = {
         totalPnlRupees: calls.reduce((acc, c) => acc + (c.pnl?.rupees || 0), 0),
-        totalInvested: calls.reduce((acc, c) => acc + (c.portfolioAmount || 100000), 0),
+        totalInvested: calls.reduce((acc, c) => acc + (c.pnl?.investedAmount || (c.quantity ? c.quantity * c.entry : (c.portfolioAmount || 0))), 0),
         wins: calls.filter(c => c.pnl?.isProfit).length,
         losses: calls.filter(c => !c.pnl?.isProfit && (c.pnl?.rupees || 0) < 0).length,
         activeCalls: calls.filter(c => c.status === "ACTIVE").length,

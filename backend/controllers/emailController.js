@@ -98,9 +98,9 @@ const getUsersByFilter = async (filter) => {
 // ─── Send Emails ──────────────────────────────────────────────────────────
 
 exports.sendBulkEmail = async (req, res) => {
-    const { templateId, filter, customSubject, customHtml } = req.body;
+    const { templateId, filter, customSubject, customHtml, type: requestType } = req.body;
 
-    let html, subject, type = 'email';
+    let html, subject, type = requestType || 'email';
     if (templateId) {
         const template = await EmailTemplate.findById(templateId);
         if (!template) return res.status(404).json({ message: 'Template not found' });

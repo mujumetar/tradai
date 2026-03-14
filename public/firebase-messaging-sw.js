@@ -23,9 +23,9 @@ messaging.onBackgroundMessage((payload) => {
 
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
-        body: payload.notification.body,
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
+        body: payload.notification?.body || payload.data?.body || 'New content available',
+        icon: '/logo.png',
+        badge: '/logo.png',
         data: {
             url: payload.data?.url || '/research'
         },

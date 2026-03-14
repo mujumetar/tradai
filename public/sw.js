@@ -1,24 +1,31 @@
 self.addEventListener('push', (event) => {
-    let data = { title: 'New Update', body: 'Check out the new trade idea!', url: '/research' };
+    let payload = {
+        title: 'New Update', 
+        body: 'Check out the new trade idea!', 
+        url: '/research' 
+    };
     
     try {
         if (event.data) {
-            data = event.data.json();
+            const parsed = event.data.json();
+            payload.title = parsed.notification?.title || parsed.title || payload.title;
+            payload.body = parsed.notification?.body || parsed.body || payload.body;
+            payload.url = parsed.data?.url || parsed.url || payload.url;
         }
     } catch (e) {
         console.error('Push data parse error:', e);
     }
 
     const options = {
-        body: data.body || 'New content available',
+        body: payload.body,
         // Use relative paths; the browser handles resolution relative to SW location
-        icon: '/icon-192.png', 
-        badge: '/icon-192.png',
+        icon: '/logo.png', 
+        badge: '/logo.png',
         vibrate: [100, 50, 100],
-        tag: 'liquide-alert-' + (data.id || Date.now()),
+        tag: 'liquide-alert-' + Date.now(),
         renotify: true,
         data: {
-            url: data.data?.url || data.url || '/research'
+            url: payload.url
         },
         actions: [
             { action: 'view', title: 'View Now' },
@@ -27,7 +34,7 @@ self.addEventListener('push', (event) => {
     };
 
     event.waitUntil(
-        self.registration.showNotification(data.title || 'liquide Update', options)
+        self.registration.showNotification(payload.title, options)
     );
 });
 

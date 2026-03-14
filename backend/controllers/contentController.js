@@ -135,7 +135,7 @@ exports.createTradeIdea = async (req, res) => {
         
         notifyUsers({
             title: `🚀 New Trade Idea: ${idea.ticker}`,
-            body: `Conviction: ${idea.timeHorizon}\nType: ${idea.type}\nEntry: ${idea.entry}\nTarget: ${idea.target}\nStop Loss: ${idea.stopLoss}`,
+            body: `Conviction: ${idea.timeHorizon || 'High'}\nQty: ${idea.quantity}\nType: ${idea.type}\nEntry: ${idea.entry}\nTarget: ${idea.target}\nStop Loss: ${idea.stopLoss}`,
             url: '/research',
             type: idea.isPremium ? 'premium' : 'all',
             sendEmail: true
