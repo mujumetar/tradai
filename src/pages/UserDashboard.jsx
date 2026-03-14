@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../utils/api";
 
+import NotificationAccessModal from "../components/NotificationAccessModal";
+
 const UserDashboard = () => {
     const navigate = useNavigate();
     const userLocal = JSON.parse(localStorage.getItem("user"));
@@ -17,6 +19,7 @@ const UserDashboard = () => {
     const [copied, setCopied] = useState(null);
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [pushLoading, setPushLoading] = useState(false);
+    const [showPushModal, setShowPushModal] = useState(false);
 
     const fetchData = useCallback(async () => {
         const storedUser = localStorage.getItem("user");
@@ -53,7 +56,15 @@ const UserDashboard = () => {
 
     useEffect(() => {
         fetchData();
-        getPushSubscription().then(sub => setIsSubscribed(!!sub));
+        getPushSubscription().then(sub => {
+            const subscribed = !!sub;
+            setIsSubscribed(subscribed);
+            
+            // Show modal if not subscribed and hasn't dismissed it this session
+            if (!subscribed && !sessionStorage.getItem('push_modal_dismissed')) {
+                setTimeout(() => setShowPushModal(true), 2000); // Wait 2s for better UX
+            }
+        });
     }, [fetchData]);
 
     const handleCreateKey = async (e) => {
@@ -91,7 +102,10 @@ const UserDashboard = () => {
                 setIsSubscribed(false);
             } else {
                 const sub = await subscribeToPush();
-                if (sub) setIsSubscribed(true);
+                if (sub) {
+                    setIsSubscribed(true);
+                    setShowPushModal(false);
+                }
             }
         } catch (err) {
             console.error("Push toggle failed:", err);
@@ -112,6 +126,14 @@ const UserDashboard = () => {
     return (
         <div className="min-h-screen bg-black text-white pt-24 px-4 sm:px-6">
             <Navbar />
+            <NotificationAccessModal 
+                show={showPushModal} 
+                onAccept={handlePushToggle} 
+                onDecline={() => {
+                    setShowPushModal(false);
+                    sessionStorage.setItem('push_modal_dismissed', 'true');
+                }} 
+            />
             <div className="max-w-5xl mx-auto pb-20 space-y-8">
 
                 {/* ── Profile Header ── */}

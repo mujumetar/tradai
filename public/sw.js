@@ -3,14 +3,14 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body,
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
+        icon: data.icon || '/icon-192.png',
+        badge: data.badge || '/icon-192.png',
         data: {
-            url: data.url || '/research'
+            url: data.data?.url || data.url || '/research'
         },
-        vibrate: [100, 50, 100],
-        actions: [
-            { action: 'open', title: 'Open App' }
+        vibrate: data.vibrate || [100, 50, 100],
+        actions: data.actions || [
+            { action: 'open', title: 'Open App', icon: '/icon-192.png' }
         ]
     };
 
@@ -20,9 +20,16 @@ self.addEventListener('push', (event) => {
 });
 
 self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
+    const notification = event.notification;
+    const action = event.action;
 
-    const urlToOpen = event.notification.data.url;
+    notification.close();
+
+    const urlToOpen = new URL(notification.data.url, self.location.origin).href;
+
+    if (action === 'close') {
+        return;
+    }
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

@@ -114,68 +114,20 @@ exports.sendBulkEmail = async (req, res) => {
         return res.status(400).json({ message: 'Provide templateId or customHtml+customSubject' });
     }
 
-    const users = await getUsersByFilter(filter || 'all');
-    if (users.length === 0) return res.json({ message: 'No users found for this filter', sent: 0 });
+    const { notifyUsers } = require('../services/notificationService');
+    
+    const results = await notifyUsers({
+        title: subject,
+        body: html.replace(/<[^>]*>?/gm, ''), // Strip HTML for push
+        url: '/research',
+        type: filter,
+        sendEmail: type === 'email'
+    });
 
-    const results = { sent: 0, failed: 0, errors: [] };
-
-    // Handle Push Notifications
-    if (type === 'push') {
-        const payload = JSON.stringify({
-            title: subject,
-            body: html,
-            url: '/research'
-        });
-
-        const pushUsers = await User.find({
-            _id: { $in: users.map(u => u._id) },
-            'pushSubscriptions.0': { $exists: true }
-        });
-
-        for (const user of pushUsers) {
-            for (const sub of user.pushSubscriptions) {
-                try {
-                    await webpush.sendNotification(sub, payload);
-                    results.sent++;
-                } catch (err) {
-                    results.failed++;
-                    results.errors.push({ email: user.email, error: err.message });
-                }
-            }
-        }
-        return res.json({ message: `Bulk push campaign complete`, ...results, total: users.length });
-    }
-
-    // Handle Emails (proceed with existing logic)
-    const transporter = getTransporter();
-
-    for (const user of users) {
-        const vars = {
-            name: user.name,
-            email: user.email,
-            subscription: user.subscription,
-            validUntil: user.validUntil ? new Date(user.validUntil).toLocaleDateString() : 'N/A',
-            supportEmail: 'support@liquide.com',
-            year: new Date().getFullYear()
-        };
-
-        const { html: mergedHtml, subject: mergedSubject } = mergeTemplate(html, subject, vars);
-
-        try {
-            await transporter.sendMail({
-                from: process.env.EMAIL_FROM || `"liquide" <${process.env.SMTP_USER}>`,
-                to: user.email,
-                subject: mergedSubject,
-                html: mergedHtml
-            });
-            results.sent++;
-        } catch (err) {
-            results.failed++;
-            results.errors.push({ email: user.email, error: err.message });
-        }
-    }
-
-    res.json({ message: `Bulk email complete`, ...results, total: users.length });
+    res.json({ 
+        message: type === 'email' ? 'Bulk email campaign complete' : 'Bulk push campaign complete',
+        ...results 
+    });
 };
 
 exports.sendSingleEmail = async (req, res) => {

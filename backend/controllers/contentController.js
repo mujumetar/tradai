@@ -83,6 +83,17 @@ exports.createBlog = async (req, res) => {
         const { title, content, author, category, isPremium } = req.body;
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
         const blog = await Blog.create({ title, content, author, category, isPremium: isPremium === 'true', imageUrl });
+        
+        // Automation: Notify users about new research
+        const { notifyUsers } = require('../services/notificationService');
+        notifyUsers({
+            title: `📖 New Research: ${blog.title}`,
+            body: `Insights from ${blog.author} in ${blog.category}. Read more now.`,
+            url: '/academy',
+            type: blog.isPremium ? 'premium' : 'all',
+            sendEmail: true
+        });
+
         res.status(201).json(blog);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -119,28 +130,16 @@ exports.createTradeIdea = async (req, res) => {
     try {
         const idea = await TradeIdea.create(req.body);
 
-        // Push notification logic
-        const users = await User.find({ 'pushSubscriptions.0': { $exists: true } });
-
-        const payload = JSON.stringify({
-            title: `New Trade Idea: ${idea.ticker}`,
-            body: `${idea.type} ${idea.ticker} at ${idea.entry}. Target: ${idea.target}`,
-            url: '/research'
+        // Automation: Send automated notifications (Push + Email)
+        const { notifyUsers } = require('../services/notificationService');
+        
+        notifyUsers({
+            title: `🚀 New Trade Idea: ${idea.ticker}`,
+            body: `Conviction: ${idea.timeHorizon}\nType: ${idea.type}\nEntry: ${idea.entry}\nTarget: ${idea.target}\nStop Loss: ${idea.stopLoss}`,
+            url: '/research',
+            type: idea.isPremium ? 'premium' : 'all',
+            sendEmail: true
         });
-
-        const pushPromises = [];
-        users.forEach(user => {
-            user.pushSubscriptions.forEach(sub => {
-                pushPromises.push(
-                    webpush.sendNotification(sub, payload).catch(err => {
-                        console.error('Push error:', err.endpoint);
-                    })
-                );
-            });
-        });
-
-        // We don't wait for all pushes to finish before responding to admin
-        Promise.all(pushPromises);
 
         res.status(201).json(idea);
     } catch (err) {
