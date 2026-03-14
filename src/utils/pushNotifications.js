@@ -18,22 +18,37 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 export const subscribeToPush = async () => {
-    if (!('serviceWorker' in navigator)) return;
+    console.log("[Push] Starting subscription flow...");
+    if (!('serviceWorker' in navigator)) {
+        console.error("[Push] Service workers not supported");
+        return;
+    }
 
     const registration = await navigator.serviceWorker.ready;
+    console.log("[Push] Service worker ready:", registration.scope);
 
     // Check if already subscribed
     let subscription = await registration.pushManager.getSubscription();
+    console.log("[Push] Current subscription:", subscription ? "Found" : "None");
 
     if (!subscription) {
+        console.log("[Push] Requesting new subscription...");
         subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
         });
+        console.log("[Push] Subscription granted!");
     }
 
     // Save to backend
-    await api.post('/users/push-subscribe', { subscription });
+    console.log("[Push] Saving to backend...");
+    try {
+        const res = await api.post('/users/push-subscribe', { subscription });
+        console.log("[Push] Backend response:", res.data);
+    } catch (err) {
+        console.error("[Push] Failed to save to backend:", err.response?.data || err.message);
+        throw err;
+    }
     return subscription;
 };
 

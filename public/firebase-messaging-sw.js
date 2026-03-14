@@ -19,15 +19,15 @@ const messaging = firebase.messaging();
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    console.log('[firebase-messaging-sw.js] Background message Received:', payload);
 
-    const notificationTitle = payload.notification.title;
+    const notificationTitle = payload.notification?.title || payload.data?.title || 'TRADAI Alert';
     const notificationOptions = {
         body: payload.notification?.body || payload.data?.body || 'New content available',
         icon: '/logo.png',
         badge: '/logo.png',
         data: {
-            url: payload.data?.url || '/research'
+            url: payload.notification?.data?.url || payload.data?.url || '/research'
         },
         actions: [
             { action: 'view', title: 'View Research' },

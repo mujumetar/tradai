@@ -8,15 +8,18 @@ export default defineConfig({
     basicSsl(),
     react(),
     VitePWA({
-      registerType: 'prompt',
+      strategies: 'injectManifest',
+      srcDir: 'public',
+      filename: 'sw.js',
+      registerType: 'autoUpdate',
       injectRegister: 'auto',
       devOptions: {
         enabled: true,
-        type: 'module'
+        type: 'classic'
       },
       manifest: {
-        name: 'liquide',
-        short_name: 'liquide',
+        name: 'TRADAI',
+        short_name: 'TRADAI',
         description: 'Advanced AI-powered market research and trade ideas',
         theme_color: '#0B0D11',
         background_color: '#0B0D11',

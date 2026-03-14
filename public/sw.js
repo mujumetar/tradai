@@ -1,40 +1,45 @@
 self.addEventListener('push', (event) => {
+    console.log('[SW] Push Received. Data:', event.data ? event.data.text() : 'No data');
+    
     let payload = {
-        title: 'New Update', 
-        body: 'Check out the new trade idea!', 
+        title: 'TRADAI Alert', 
+        body: 'New trade idea available!', 
         url: '/research' 
     };
     
-    try {
-        if (event.data) {
+    if (event.data) {
+        try {
             const parsed = event.data.json();
+            console.log('[SW] Parsed Payload:', parsed);
             payload.title = parsed.notification?.title || parsed.title || payload.title;
             payload.body = parsed.notification?.body || parsed.body || payload.body;
-            payload.url = parsed.data?.url || parsed.url || payload.url;
+            payload.url = parsed.data?.url || (parsed.notification?.data?.url) || parsed.url || payload.url;
+        } catch (e) {
+            console.warn('[SW] Payload not JSON, using text fallback');
+            payload.body = event.data.text() || payload.body;
         }
-    } catch (e) {
-        console.error('Push data parse error:', e);
     }
 
     const options = {
         body: payload.body,
-        // Use relative paths; the browser handles resolution relative to SW location
         icon: '/logo.png', 
         badge: '/logo.png',
         vibrate: [100, 50, 100],
-        tag: 'liquide-alert-' + Date.now(),
+        tag: 'tradai-alert', // Static tag so new alerts replace old ones of same type
         renotify: true,
         data: {
             url: payload.url
         },
         actions: [
-            { action: 'view', title: 'View Now' },
+            { action: 'view', title: 'View Research' },
             { action: 'close', title: 'Dismiss' }
         ]
     };
 
+    console.log('[SW] Showing Notification:', payload.title, options);
     event.waitUntil(
         self.registration.showNotification(payload.title, options)
+            .catch(err => console.error('[SW] showNotification error:', err))
     );
 });
 

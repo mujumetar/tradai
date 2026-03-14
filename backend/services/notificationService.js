@@ -126,7 +126,7 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
                             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
                                 <h2 style="color: #E78932;">${title}</h2>
                                 <p>${body.replace(/\n/g, '<br>')}</p>
-                                <a href="${`https://ai-tradeai.vercel.app` || 'https://tradais.vercel.app'}${url}" 
+                                <a href="${`https://tradai.ai` || 'https://tradais.vercel.app'}${url}" 
                                    style="display: inline-block; background: #E78932; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px;">
                                     View Details
                                 </a>

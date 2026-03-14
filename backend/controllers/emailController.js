@@ -156,7 +156,7 @@ exports.sendSingleEmail = async (req, res) => {
     const transporter = getTransporter();
 
     await transporter.sendMail({
-        from: `"TRADAI" <no-reply@liquide.com>`,
+        from: `"TRADAI" <no-reply@tradai.ai>`,
         to: user.email, subject: mergedSubject, html: mergedHtml
     });
 
