@@ -35,7 +35,7 @@ const StatItem = ({ stat, index }) => {
             transition={{ delay: index * 0.1 }}
             className="text-center group"
         >
-            <h3 className="text-4xl md:text-5xl font-extrabold text-gradient mb-2 group-hover:scale-110 transition-transform duration-500">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gradient mb-2 group-hover:scale-110 transition-transform duration-500">
                 {stat.prefix}<motion.span>{displayValue}</motion.span>{stat.suffix}
             </h3>
             <p className="text-gray-400 font-medium tracking-wide uppercase text-xs opacity-70 group-hover:opacity-100 transition-opacity">{stat.label}</p>
@@ -45,9 +45,9 @@ const StatItem = ({ stat, index }) => {
 
 const Stats = () => {
     return (
-        <section className="py-24 px-6 relative overflow-hidden">
+        <section className="py-14 sm:py-24 px-4 sm:px-6 relative overflow-hidden">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-            <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+            <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 relative z-10">
                 {stats.map((stat, index) => (
                     <StatItem key={stat.label} stat={stat} index={index} />
                 ))}

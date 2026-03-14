@@ -2,12 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import api from "./api";
 
-/**
- * Firebase Configuration
- * 
- * REPLACE these values with your Firebase Project settings from the Console:
- * Project Settings -> General -> Your apps -> Web apps
- */
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCvWGmzMpLCJO73-diWhqEZxKo_xrG1mjw",
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "tradai-68b07.firebaseapp.com",
@@ -18,47 +12,70 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-LFDH7QY04Z"
 };
 
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+let app;
+let messaging;
+
+try {
+    app = initializeApp(firebaseConfig);
+    messaging = getMessaging(app);
+} catch (e) {
+    console.warn("Firebase init failed:", e);
+}
 
 /**
- * Request permission and get FCM token
+ * Request permission and get FCM token.
+ * Returns the token string on success, null on failure.
+ * Never throws — all errors are caught internally.
  */
 export const requestFcmToken = async () => {
     try {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-            const token = await getToken(messaging, {
-                // Get this from: Firebase Console -> Project Settings -> Cloud Messaging -> Web Push certificates
-                vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || "YOUR_VAPID_BROWSER_KEY"
-            });
+        if (!messaging) return null;
 
-            if (token) {
-                // Save token to backend
-                await api.post('/users/fcm-token', { token });
-                console.log("FCM Token saved successfully");
-                return token;
-            } else {
-                console.warn("No registration token available. Request permission to generate one.");
-            }
-        } else {
-            console.warn("Notification permission denied");
+        const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+        // Only proceed with FCM if a real VAPID key is configured
+        if (!vapidKey || vapidKey === "YOUR_VAPID_BROWSER_KEY" || vapidKey.trim() === "") {
+            console.info("FCM VAPID key not configured — skipping FCM, using Web Push only.");
+            return null;
         }
+
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+            console.warn("Notification permission denied");
+            return null;
+        }
+
+        const token = await getToken(messaging, { vapidKey });
+        if (!token) {
+            console.warn("No FCM registration token available.");
+            return null;
+        }
+
+        // Save token to backend (non-fatal if this fails)
+        try {
+            await api.post('/users/fcm-token', { token });
+            console.log("FCM Token saved successfully");
+        } catch (saveErr) {
+            console.warn("FCM token save failed (non-fatal):", saveErr);
+        }
+
+        return token;
     } catch (error) {
-        console.error("An error occurred while retrieving token:", error);
+        console.warn("FCM token retrieval failed (non-fatal):", error);
+        return null;
     }
-    return null;
 };
 
 /**
- * Listen for foreground messages
+ * Listen for foreground FCM messages and show a notification.
  */
 export const onForegroundMessage = () => {
+    if (!messaging) return;
     onMessage(messaging, (payload) => {
         console.log("Foreground Message received:", payload);
-        // You can show a custom toast notification here if you want
-        const { title, body } = payload.notification;
-        new Notification(title, { body, icon: '/icon-192.png' });
+        const { title, body } = payload.notification || {};
+        if (title && Notification.permission === "granted") {
+            new Notification(title, { body, icon: '/icon-192.png' });
+        }
     });
 };
 

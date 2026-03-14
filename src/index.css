@@ -15,6 +15,17 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Safe area for iOS notch / home indicator */
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  scroll-behavior: smooth;
+}
+
+/* ── Minimum touch targets (iOS HIG: 44×44pt) ── */
+button, a, [role="button"] {
+  min-height: 40px;
+  touch-action: manipulation;
 }
 
 /* ── Gradients ──────────────────────────────── */

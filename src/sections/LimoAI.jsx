@@ -81,19 +81,19 @@ const LimoAI = () => {
     ];
 
     return (
-        <section className="py-24 px-6 bg-[#0B0D11]">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <section className="py-14 sm:py-24 px-4 sm:px-6 bg-[#0B0D11]">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
                 <div>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/20 bg-purple-500/5 text-purple-400 font-bold text-sm mb-6">
                         <Sparkles size={16} /> POWERED BY AI
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-black mb-8">Meet <span className="text-purple-500 font-black italic">LiMo</span></h2>
-                    <p className="text-xl text-gray-400 mb-10 leading-relaxed">
+                    <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-6 sm:mb-8">Meet <span className="text-purple-500 font-black italic">LiMo</span></h2>
+                    <p className="text-base sm:text-xl text-gray-400 mb-8 sm:mb-10 leading-relaxed">
                         Your personal AI research analyst. Get instant answers to your stock queries,
                         deep portfolio audits, and tailored trade ideas in seconds.
                     </p>
 
-                    <div className="space-y-4 mb-20">
+                    <div className="space-y-4 mb-10 sm:mb-20">
                         {faqs.map((faq, idx) => (
                             <div key={idx} className="border border-white/5 rounded-2xl overflow-hidden bg-white/5">
                                 <button
@@ -134,7 +134,7 @@ const LimoAI = () => {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
-                        className="bg-black/40 border border-white/10 rounded-[48px] p-8 backdrop-blur-xl shadow-2xl"
+                        className="bg-black/40 border border-white/10 rounded-[32px] sm:rounded-[48px] p-5 sm:p-8 backdrop-blur-xl shadow-2xl"
                     >
                         <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-6">
                             <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center font-black italic text-black text-xl">

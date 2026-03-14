@@ -36,13 +36,13 @@ const TradeIdeas = () => {
     return (
         <main className="min-h-screen bg-black text-white">
             <Navbar />
-            <section className="pt-32 pb-6 px-6 max-w-7xl mx-auto border-b border-white/10 mb-8">
+            <section className="pt-24 sm:pt-32 pb-6 px-4 sm:px-6 max-w-7xl mx-auto border-b border-white/10 mb-8">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-4xl md:text-6xl font-black mb-4"
+                            className="text-3xl sm:text-4xl md:text-6xl font-black mb-4"
                         >
                             Market <span className="text-gradient">Research</span>
                         </motion.h1>
@@ -68,10 +68,10 @@ const TradeIdeas = () => {
             </section>
 
             {activeTab === 'ideas' ? (
-                <section className="pb-24 px-6 max-w-7xl mx-auto">
+                <section className="pb-16 sm:pb-24 px-4 sm:px-6 max-w-7xl mx-auto">
                     {error && <p className="text-red-500 mb-8">{error}</p>}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                         {ideas.map((idea, idx) => (
                             <motion.div
                                 key={idea.id}
