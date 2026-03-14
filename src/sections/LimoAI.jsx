@@ -95,13 +95,13 @@ const LimoAI = () => {
 
                     <div className="space-y-4 mb-10 sm:mb-20">
                         {faqs.map((faq, idx) => (
-                            <div key={idx} className="border border-white/5 rounded-2xl overflow-hidden bg-white/5">
+                            <div key={idx} className="border border-white/5 rounded-2xl overflow-hidden bg-white/5 touch-card">
                                 <button
                                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                                    className="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+                                    className="w-full p-4 sm:p-6 flex items-center justify-between text-left hover:bg-white/5 transition-colors touch-active"
                                 >
-                                    <span className="font-bold">{faq.q}</span>
-                                    <ChevronDown className={`transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`} />
+                                    <span className="font-bold text-sm sm:text-base">{faq.q}</span>
+                                    <ChevronDown className={`transition-transform duration-300 w-4 h-4 sm:w-6 sm:h-6 ${openFaq === idx ? 'rotate-180' : ''}`} />
                                 </button>
                                 <AnimatePresence>
                                     {openFaq === idx && (
@@ -109,7 +109,7 @@ const LimoAI = () => {
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
-                                            className="px-6 pb-6 text-gray-400 text-sm leading-relaxed"
+                                            className="px-4 sm:px-6 pb-4 sm:pb-6 text-gray-400 text-xs sm:text-sm leading-relaxed"
                                         >
                                             {faq.a}
                                         </motion.div>
@@ -132,9 +132,9 @@ const LimoAI = () => {
                     <div className="absolute inset-0 bg-purple-500/10 blur-[120px] rounded-full -z-10" />
                     {/* Chat Mockup */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
-                        className="bg-black/40 border border-white/10 rounded-[32px] sm:rounded-[48px] p-5 sm:p-8 backdrop-blur-xl shadow-2xl"
+                        className="bg-black/60 border border-white/10 rounded-[32px] sm:rounded-[48px] p-4 sm:p-8 backdrop-blur-xl shadow-2xl glass-morphism touch-card"
                     >
                         <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-6">
                             <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center font-black italic text-black text-xl">

@@ -31,7 +31,7 @@ const FeatureShowcase = () => {
                 {features.map((feature, index) => (
                     <div
                         key={index}
-                        className={`group flex flex-col ${feature.reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-10 sm:gap-14 lg:gap-20`}
+                        className={`group flex flex-col ${feature.reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-10 sm:gap-14 lg:gap-20 touch-card`}
                     >
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}

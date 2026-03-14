@@ -16,10 +16,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Safe area for iOS notch / home indicator */
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 70px); /* Space for mobile nav */
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   scroll-behavior: smooth;
+  @apply bg-black text-white;
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* ── Minimum touch targets (iOS HIG: 44×44pt) ── */
@@ -127,6 +134,14 @@ button, a, [role="button"] {
 }
 
 /* ── Line clamp ─────────────────────────────── */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -141,4 +156,34 @@ button, a, [role="button"] {
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ── Mobile Interactivity ───────────────────── */
+.touch-card {
+  @apply transition-all duration-300 active:scale-[0.97] hover:shadow-2xl hover:shadow-white/5;
+}
+
+.glass-morphism {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+.bottom-nav-blur {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* ── Typography Responsive ──────────────────── */
+h1 { @apply text-[2.5rem] sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight; }
+h2 { @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight; }
+h3 { @apply text-2xl sm:text-3xl font-black; }
+
+/* ── Animations ─────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }

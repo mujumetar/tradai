@@ -33,12 +33,12 @@ const StatItem = ({ stat, index }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
-            className="text-center group"
+            className="text-center group touch-active p-4 rounded-2xl transition-all"
         >
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gradient mb-2 group-hover:scale-110 transition-transform duration-500">
+            <h3 className="mb-2 group-hover:scale-110 transition-transform duration-500">
                 {stat.prefix}<motion.span>{displayValue}</motion.span>{stat.suffix}
             </h3>
-            <p className="text-gray-400 font-medium tracking-wide uppercase text-xs opacity-70 group-hover:opacity-100 transition-opacity">{stat.label}</p>
+            <p className="text-gray-400 font-black tracking-[0.2em] uppercase text-[10px] sm:text-xs opacity-70 group-hover:opacity-100 transition-opacity">{stat.label}</p>
         </motion.div>
     );
 };

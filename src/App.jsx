@@ -19,6 +19,7 @@ import ApiDocs from "./pages/ApiDocs";
 import NotFound from "./pages/NotFound";
 import ReloadPrompt from "./components/ReloadPrompt";
 import PWAInstallButton from "./components/PWAInstallButton";
+import MobileNav from "./components/MobileNav";
 
 const ProtectedRoute = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -40,6 +41,7 @@ function App() {
   return (
     <Router>
       <ReloadPrompt />
+      <MobileNav />
       <PWAInstallButton variant="banner" />
       <Routes>
         <Route path="/" element={<Home />} />

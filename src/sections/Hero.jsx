@@ -25,7 +25,7 @@ const Hero = () => {
                         Empowering 3.5 Million+ Investors
                     </motion.div>
 
-                    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[0.9] mb-6 sm:mb-8 tracking-tighter">
+                    <h1 className="mb-6 sm:mb-8">
                         Invest with <span className="text-gradient block mt-1 sm:mt-2">Intelligence</span>
                     </h1>
                     <p className="text-base sm:text-xl text-gray-400 mb-8 sm:mb-10 max-w-lg leading-relaxed">
@@ -37,13 +37,14 @@ const Hero = () => {
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="bg-accent-gradient text-black px-7 sm:px-10 py-4 sm:py-5 rounded-3xl font-black text-base sm:text-lg flex items-center justify-center gap-3 shadow-[0_10px_40px_rgba(249,115,22,0.3)]"
+                            className="bg-accent-gradient text-black px-7 sm:px-10 py-4 sm:py-5 rounded-2xl sm:rounded-3xl font-black text-base sm:text-lg flex items-center justify-center gap-3 shadow-[0_10px_40px_rgba(249,115,22,0.3)] touch-active"
                         >
                             Get Started Now <ArrowRight size={20} />
                         </motion.button>
                         <motion.button
                             whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
-                            className="bg-black border border-white/10 text-white px-7 sm:px-10 py-4 sm:py-5 rounded-3xl font-black text-base sm:text-lg flex items-center justify-center gap-3 transition-colors"
+                            whileTap={{ scale: 0.95 }}
+                            className="bg-black border border-white/10 text-white px-7 sm:px-10 py-4 sm:py-5 rounded-2xl sm:rounded-3xl font-black text-base sm:text-lg flex items-center justify-center gap-3 transition-colors touch-active"
                         >
                             <div className="p-2 bg-white/10 rounded-full"><Play size={16} fill="white" /></div> Watch Demo
                         </motion.button>
@@ -94,7 +95,7 @@ const Hero = () => {
                     <motion.div
                         animate={{ y: [0, -20, 0] }}
                         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                        className="relative bg-[#111] rounded-[40px] sm:rounded-[60px] border border-white/10 p-6 sm:p-10 shadow-3xl overflow-hidden group mt-6 sm:mt-0"
+                        className="relative bg-[#111] rounded-[32px] sm:rounded-[60px] border border-white/10 p-6 sm:p-10 shadow-3xl overflow-hidden group mt-6 sm:mt-0 touch-card"
                     >
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-accent-gradient opacity-0 group-hover:opacity-100 transition-opacity" />
 
