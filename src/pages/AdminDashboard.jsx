@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Users, CreditCard, Layout, Settings, AlertCircle, Plus, Search,
@@ -120,15 +120,117 @@ const CreateUserModal = ({ onClose, onUpdate }) => {
     );
 };
 
+const POPULAR_STOCKS = [
+    { ticker: 'RELIANCE', name: 'Reliance Industries', market: 'NSE' },
+    { ticker: 'TCS', name: 'Tata Consultancy Services', market: 'NSE' },
+    { ticker: 'HDFCBANK', name: 'HDFC Bank', market: 'NSE' },
+    { ticker: 'INFY', name: 'Infosys', market: 'NSE' },
+    { ticker: 'ICICIBANK', name: 'ICICI Bank', market: 'NSE' },
+    { ticker: 'SBI', name: 'State Bank of India', market: 'NSE' },
+    { ticker: 'ITC', name: 'ITC Limited', market: 'NSE' },
+    { ticker: 'LART', name: 'Larsen & Toubro', market: 'NSE' },
+    { ticker: 'BAJFINANCE', name: 'Bajaj Finance', market: 'NSE' },
+    { ticker: 'BTC', name: 'Bitcoin', market: 'CRYPTO' },
+    { ticker: 'ETH', name: 'Ethereum', market: 'CRYPTO' },
+    { ticker: 'BANKNIFTY', name: 'Bank Nifty', market: 'NSE' },
+    { ticker: 'NIFTY', name: 'Nifty 50', market: 'NSE' }
+];
+
 const ContentModal = ({ type, item, onClose, onUpdate }) => {
     const isEdit = !!item;
     const [form, setForm] = useState(
         type === 'blog'
             ? { title: item?.title || '', content: item?.content || '', author: item?.author || '', category: item?.category || 'Finance', isPremium: item?.isPremium || false }
-            : { title: item?.title || '', ticker: item?.ticker || '', type: item?.type || 'BUY', entry: item?.entry || '', target: item?.target || '', stopLoss: item?.stopLoss || '', isPremium: item?.isPremium ?? true, status: item?.status || 'ACTIVE' }
+            : {
+                title: item?.title || '', ticker: item?.ticker || '', market: item?.market || 'NSE', type: item?.type || 'BUY',
+                entry: item?.entry || '', target: item?.target || '', target2: item?.target2 || '', target3: item?.target3 || '',
+                stopLoss: item?.stopLoss || '', portfolioAmount: item?.portfolioAmount || 100000, 
+                isPremium: item?.isPremium ?? true, status: item?.status || 'ACTIVE' 
+              }
     );
     const [loading, setLoading] = useState(false);
+    const [fetchingPrice, setFetchingPrice] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    
+    // eslint-disable-next-line
+    const searchTimeout = useRef(null);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     const set = k => e => setForm(p => ({ ...p, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
+
+    const handleSearchInput = (e) => {
+        const val = e.target.value;
+        setForm(p => ({ ...p, ticker: val }));
+        
+        if (!val.trim()) {
+            setSearchResults([]);
+            setShowDropdown(false);
+            return;
+        }
+
+        setIsSearching(true);
+        setShowDropdown(true);
+
+        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+        searchTimeout.current = setTimeout(async () => {
+            try {
+                const { data } = await api.get(`/trade-ideas/search-tickers?q=${val}`);
+                setSearchResults(data);
+            } catch (err) {
+                console.error("Search failed");
+            }
+            setIsSearching(false);
+        }, 400); // 400ms debounce
+    };
+
+    const handleSelectResult = (s) => {
+        // Map common Yahoo exchanges to our accepted markets
+        let mappedMarket = 'NSE';
+        const ex = s.exchange?.toUpperCase();
+        const type = s.type?.toUpperCase();
+
+        if (type === 'CRYPTOCURRENCY') mappedMarket = 'CRYPTO';
+        else if (type === 'CURRENCY') mappedMarket = 'FOREX';
+        else if (ex === 'BSE') mappedMarket = 'BSE';
+        else if (ex === 'NYQ' || ex === 'NMS' || ex === 'NGM') mappedMarket = 'US'; 
+        else if (ex === 'MCX') mappedMarket = 'MCX';
+        else if (ex === 'NSE') mappedMarket = 'NSE';
+        else mappedMarket = 'NSE'; // Default to NSE if unsure, but user can change it
+
+        setForm(p => ({ 
+            ...p, 
+            ticker: s.symbol, 
+            title: s.name, 
+            market: mappedMarket 
+        }));
+        setShowDropdown(false);
+        setSearchResults([]);
+    };
+
+    const fetchCurrentPrice = async () => {
+        if (!form.ticker) return alert('Please enter a Ticker first');
+        setFetchingPrice(true);
+        try {
+            const { data } = await api.get(`/trade-ideas/live-price?ticker=${form.ticker}&market=${form.market || 'NSE'}`);
+            setForm(p => ({ ...p, entry: data.price }));
+        } catch (err) {
+            const msg = err.response?.data?.message || 'Failed to get live price. Valid ticker?';
+            alert(msg);
+        }
+        setFetchingPrice(false);
+    };
 
     const handleSubmit = async e => {
         e.preventDefault(); setLoading(true);
@@ -169,11 +271,77 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
                         </>
                     ) : (
                         <>
-                            <input className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Ticker (e.g. RELIANCE)" value={form.ticker} onChange={set('ticker')} required />
-                            <div className="grid grid-cols-3 gap-3">
-                                <input type="number" className="bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Entry" value={form.entry} onChange={set('entry')} required />
-                                <input type="number" className="bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Target" value={form.target} onChange={set('target')} required />
-                                <input type="number" className="bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Stop Loss" value={form.stopLoss} onChange={set('stopLoss')} required />
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                <div className="col-span-2 md:col-span-1 relative">
+                                    <label className="text-[10px] text-gray-500 uppercase block mb-1">Search Global Ticker (Yahoo Fin)</label>
+                                    <input 
+                                        className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" 
+                                        placeholder="Type to search (e.g. RELIANCE, BTC-USD)" 
+                                        value={form.ticker} 
+                                        onChange={handleSearchInput} 
+                                        required 
+                                        autoComplete="off"
+                                    />
+                                    {showDropdown && (
+                                        <div ref={dropdownRef} className="absolute top-full mt-1 w-full bg-[#1a1a1a] border border-white/10 rounded-xl max-h-48 overflow-y-auto z-[100] shadow-xl custom-scrollbar">
+                                            {isSearching ? (
+                                                <div className="p-3 text-xs text-center text-gray-400">Searching global markets...</div>
+                                            ) : searchResults.length === 0 ? (
+                                                <div className="p-3 text-xs text-center text-gray-400">No results found</div>
+                                            ) : (
+                                                searchResults.map((s, i) => (
+                                                    <div 
+                                                        key={`${s.symbol}-${i}`} 
+                                                        className="p-3 hover:bg-orange-500/10 cursor-pointer border-b border-white/5 last:border-0 group transition-colors"
+                                                        onClick={() => handleSelectResult(s)}
+                                                    >
+                                                        <div className="flex justify-between items-center mb-1">
+                                                            <span className="font-bold text-sm text-white group-hover:text-orange-400">{s.symbol}</span>
+                                                            <span className="text-[10px] font-mono px-1.5 py-0.5 bg-white/5 text-gray-400 rounded group-hover:bg-orange-500/20 group-hover:text-orange-400">{s.type}</span>
+                                                        </div>
+                                                        <p className="text-[10px] text-gray-500 truncate uppercase tracking-tighter">{s.name} • {s.exchange}</p>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="text-[10px] text-gray-500 uppercase block mb-1">Market Mapping (Required for API)</label>
+                                    <select className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" value={form.market} onChange={set('market')}>
+                                        <option value="NSE">NSE (Indian Stocks)</option>
+                                        <option value="BSE">BSE</option>
+                                        <option value="CRYPTO">CRYPTO</option>
+                                        <option value="FOREX">FOREX</option>
+                                        <option value="MCX">MCX (Commodities)</option>
+                                        <option value="US">US / Global Markets</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <label className="text-[10px] text-gray-500 uppercase block mb-1">Trade Title</label>
+                                <input className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Title (e.g. Breakout Play)" value={form.title} onChange={set('title')} required />
+                            </div>
+                            <div className="grid grid-cols-3 gap-3 mb-3">
+                                <div>
+                                    <label className="text-[10px] text-gray-500 uppercase flex items-center justify-between mb-1">
+                                        <span>Entry Price</span>
+                                        <button type="button" onClick={fetchCurrentPrice} disabled={fetchingPrice} className="text-orange-400 hover:text-orange-300 font-bold bg-orange-500/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                            {fetchingPrice ? '...' : <><Zap size={10} /> Fetch CMP</>}
+                                        </button>
+                                    </label>
+                                    <input type="number" step="0.01" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" placeholder="0.00" value={form.entry} onChange={set('entry')} required />
+                                </div>
+                                <div><label className="text-[10px] text-gray-500 uppercase block mb-1">Target 1</label><input type="number" step="0.01" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" placeholder="0.00" value={form.target} onChange={set('target')} required /></div>
+                                <div><label className="text-[10px] text-gray-500 uppercase block mb-1">Stop Loss</label><input type="number" step="0.01" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" placeholder="0.00" value={form.stopLoss} onChange={set('stopLoss')} required /></div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                <div><label className="text-[10px] text-gray-500 uppercase block mb-1">Target 2 (opt)</label><input type="number" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" placeholder="0.00" value={form.target2} onChange={set('target2')} /></div>
+                                <div><label className="text-[10px] text-gray-500 uppercase block mb-1">Target 3 (opt)</label><input type="number" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" placeholder="0.00" value={form.target3} onChange={set('target3')} /></div>
+                            </div>
+                            <div className="w-full mb-3">
+                                <label className="text-[10px] text-gray-500 uppercase block mb-1">Tracking Amount (min ₹1,00,000)</label>
+                                <input type="number" min="100000" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="100000" value={form.portfolioAmount} onChange={set('portfolioAmount')} required />
                             </div>
                             <div className="flex gap-3">
                                 <select className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" value={form.type} onChange={set('type')}>
@@ -277,6 +445,8 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [blogs, setBlogs] = useState([]);
     const [tradeIdeas, setTradeIdeas] = useState([]);
+    const [closeModal, setCloseModal] = useState(null); // { id, ticker }
+    const [closePrice, setClosePrice] = useState('');
     const [logs, setLogs] = useState([]);
     const [analytics, setAnalytics] = useState(null);
     const [apiKeys, setApiKeys] = useState([]);
@@ -646,28 +816,75 @@ const AdminDashboard = () => {
 
                 {/* ── Trade Ideas Tab ── */}
                 {activeTab === 'trade-ideas' && (
-                    <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
-                        <table className="w-full text-sm">
-                            <thead className="border-b border-white/5 text-gray-500 uppercase text-xs tracking-wider"><tr>
-                                <th className="text-left p-4">Ticker</th><th className="text-left p-4">Type</th><th className="text-left p-4">Entry / Target / SL</th><th className="text-left p-4">Access</th><th className="text-right p-4">Actions</th>
-                            </tr></thead>
-                            <tbody className="divide-y divide-white/5">
-                                {tradeIdeas.map(t => (
-                                    <tr key={t._id} className="group hover:bg-white/5">
-                                        <td className="p-4 font-black text-orange-400">{t.ticker}</td>
-                                        <td className="p-4"><span className={`px-2 py-1 rounded-full text-xs font-bold ${t.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{t.type}</span></td>
-                                        <td className="p-4 font-mono text-xs text-gray-400">{t.entry} / {t.target} / {t.stopLoss}</td>
-                                        <td className="p-4"><span className={`px-2 py-1 rounded-full text-xs font-bold ${t.isPremium ? 'bg-orange-500/20 text-orange-400' : 'bg-green-500/20 text-green-400'}`}>{t.isPremium ? 'Premium' : 'Free'}</span></td>
-                                        <td className="p-4 text-right">
-                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => setContentModal({ type: 'idea', item: t })} className="text-xs font-bold text-orange-400 hover:underline flex items-center gap-1"><Edit2 size={12} />Edit</button>
-                                                <button onClick={() => handleDeleteContent('idea', t._id)} className="text-red-500 p-1.5 bg-red-500/10 rounded-lg hover:bg-red-500/20"><Trash2 size={14} /></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="space-y-6">
+                        <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                            <table className="w-full text-sm">
+                                <thead className="border-b border-white/5 text-gray-500 uppercase text-xs tracking-wider"><tr>
+                                    <th className="text-left p-4">Ticker / Title</th><th className="text-left p-4">Type</th><th className="text-left p-4">Entry / SL / T1</th><th className="text-left p-4">CMP</th><th className="p-4">P&L</th><th className="p-4">Status</th><th className="text-right p-4">Actions</th>
+                                </tr></thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {tradeIdeas.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-gray-600">No trade ideas yet.</td></tr>}
+                                    {tradeIdeas.map(t => (
+                                        <tr key={t._id} className="group hover:bg-white/5">
+                                            <td className="p-4">
+                                                <div>
+                                                    <p className="font-black text-orange-400">{t.ticker}</p>
+                                                    <p className="text-xs text-gray-500 truncate max-w-[120px]">{t.title}</p>
+                                                </div>
+                                            </td>
+                                            <td className="p-4"><span className={`px-2 py-1 rounded-full text-xs font-bold ${t.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{t.type}</span></td>
+                                            <td className="p-4 font-mono text-xs text-gray-400">{t.entry} / {t.stopLoss} / {t.target}</td>
+                                            <td className="p-4 font-bold text-amber-400 text-sm">{t.currentPrice ? `₹${t.currentPrice}` : '—'}</td>
+                                            <td className="p-4 text-center">
+                                                <span className={`text-sm font-black ${t.pnl?.isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                    {t.pnl?.isProfit ? '+' : ''}{t.pnl?.percent?.toFixed(2)}%
+                                                </span>
+                                                <p className={`text-[10px] ${t.pnl?.isProfit ? 'text-emerald-600' : 'text-red-600'}`}>
+                                                    {t.pnl?.isProfit ? '+' : ''}₹{t.pnl?.rupees?.toFixed(0)}
+                                                </p>
+                                            </td>
+                                            <td className="p-4 text-center">
+                                                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                                                    t.status === 'ACTIVE' ? 'bg-blue-500/20 text-blue-400' :
+                                                    t.status === 'SL_HIT' ? 'bg-red-500/20 text-red-400' :
+                                                    t.status?.includes('TARGET') ? 'bg-emerald-500/20 text-emerald-400' :
+                                                    'bg-gray-500/20 text-gray-400'
+                                                }`}>{t.status?.replace('_', ' ')}</span>
+                                            </td>
+                                            <td className="p-4 text-right">
+                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {t.status === 'ACTIVE' && (
+                                                        <button onClick={() => { setCloseModal({ id: t._id, ticker: t.ticker }); setClosePrice(''); }} className="text-xs font-bold text-amber-400 hover:underline px-2 py-1 border border-amber-400/20 rounded">Close</button>
+                                                    )}
+                                                    <button onClick={() => setContentModal({ type: 'idea', item: t })} className="text-xs font-bold text-orange-400 hover:underline flex items-center gap-1 ml-2"><Edit2 size={12} />Edit</button>
+                                                    <button onClick={() => handleDeleteContent('idea', t._id)} className="text-red-500 p-1.5 bg-red-500/10 rounded-lg hover:bg-red-500/20 ml-2"><Trash2 size={14} /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {/* Close Call Modal */}
+                        <AnimatePresence>
+                            {closeModal && (
+                                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
+                                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                                        className="bg-[#111] border border-white/10 w-full max-w-sm rounded-3xl p-8 relative">
+                                        <button onClick={() => setCloseModal(null)} className="absolute top-6 right-6 text-gray-400"><CloseIcon size={22} /></button>
+                                        <h2 className="text-xl font-bold mb-2">Close {closeModal.ticker}</h2>
+                                        <p className="text-gray-400 text-sm mb-6">Enter the actual closing/exit price for this trade:</p>
+                                        <input type="number" step="0.01" value={closePrice} onChange={e => setClosePrice(e.target.value)} placeholder="Closing price" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500 mb-4" />
+                                        <button onClick={async () => {
+                                            if (!closePrice) return;
+                                            await api.post(`/trade-ideas/${closeModal.id}/close`, { closingPrice: parseFloat(closePrice) });
+                                            setCloseModal(null); fetchAll();
+                                        }} className="w-full bg-orange-500 text-black font-bold py-3 rounded-xl hover:opacity-90">Confirm Close</button>
+                                    </motion.div>
+                                </div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 )}
 

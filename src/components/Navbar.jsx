@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronRight, User, LogOut, LayoutDashboard, Shield } from "lucide-react";
+import { Menu, X, ChevronRight, User, LogOut, LayoutDashboard, Shield, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../utils/cn";
 import PWAInstallButton from "./PWAInstallButton";

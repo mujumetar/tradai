@@ -2,6 +2,8 @@ const Blog = require('../models/Blog');
 const TradeIdea = require('../models/TradeIdea');
 const User = require('../models/User');
 const webpush = require('web-push');
+const axios = require('axios');
+const { fetchLivePrice } = require('../services/portfolioAutoUpdater');
 
 // @desc    Get all blogs
 // @route   GET /api/blogs
@@ -34,9 +36,20 @@ exports.getTradeIdeas = async (req, res) => {
     const user = req.user;
 
     const gatedIdeas = ideas.map(idea => {
-        const obj = idea.toObject();
+        // use { virtuals: true } to ensure pnl is included
+        const obj = idea.toObject({ virtuals: true });
         if (obj.isPremium && (!user || user.subscription !== 'premium')) {
-            return { ...obj, target: 'LOCKED', stopLoss: 'LOCKED', isLocked: true };
+            return {
+                ...obj,
+                entry: 'LOCKED',
+                target: 'LOCKED',
+                target2: 'LOCKED',
+                target3: 'LOCKED',
+                stopLoss: 'LOCKED',
+                reasoning: 'LOCKED',
+                pnl: null,
+                isLocked: true
+            };
         }
         return { ...obj, isLocked: false };
     });
@@ -130,4 +143,63 @@ exports.deleteTradeIdea = async (req, res) => {
     const idea = await TradeIdea.findByIdAndDelete(req.params.id);
     if (!idea) return res.status(404).json({ message: 'Trade idea not found' });
     res.json({ message: 'Trade idea deleted' });
+};
+
+// @desc    Search for any global ticker
+// @route   GET /api/trade-ideas/search-tickers?q=...
+exports.searchTickers = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) return res.json([]);
+        const { data } = await axios.get(`https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=15&newsCount=0`, {
+            headers: { 'User-Agent': 'Mozilla/5.0' },
+            timeout: 5000
+        });
+        const results = (data.quotes || []).map(qt => ({
+            symbol: qt.symbol,
+            name: qt.shortname || qt.longname || qt.symbol,
+            exchange: qt.exchange,
+            type: qt.quoteType
+        }));
+        res.json(results);
+    } catch(err) {
+        res.status(500).json({ message: 'Search failed' });
+    }
+};
+
+// @desc    Fetch live price for a given ticker & market
+// @route   GET /api/trade-ideas/live-price?ticker=...&market=...
+exports.getLivePrice = async (req, res) => {
+    try {
+        const { ticker, market } = req.query;
+        if (!ticker) return res.status(400).json({ message: 'Ticker required' });
+        const price = await fetchLivePrice(ticker, market || 'NSE');
+        if (!price) return res.status(404).json({ message: 'Price not found' });
+        res.json({ price });
+    } catch(err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Close a trade idea (manual exit)
+// @route   POST /api/trade-ideas/:id/close
+exports.closeTradeIdea = async (req, res) => {
+    const { closingPrice } = req.body;
+    try {
+        const idea = await TradeIdea.findByIdAndUpdate(
+            req.params.id,
+            {
+                status: 'CLOSED',
+                closingPrice: parseFloat(closingPrice),
+                closedAt: new Date(),
+                currentPrice: parseFloat(closingPrice),
+                lastPriceUpdate: new Date(),
+            },
+            { new: true }
+        );
+        if (!idea) return res.status(404).json({ message: 'Trade idea not found' });
+        res.json(idea);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
 };
