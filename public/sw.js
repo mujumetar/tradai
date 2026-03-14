@@ -1,39 +1,50 @@
 self.addEventListener('push', (event) => {
-    const data = event.data ? event.data.json() : { title: 'New Update', body: 'Check out the new trade idea!' };
+    let data = { title: 'New Update', body: 'Check out the new trade idea!', url: '/research' };
+    
+    try {
+        if (event.data) {
+            data = event.data.json();
+        }
+    } catch (e) {
+        console.error('Push data parse error:', e);
+    }
 
     const options = {
-        body: data.body,
-        icon: data.icon || '/icon-192.png',
-        badge: data.badge || '/icon-192.png',
+        body: data.body || 'New content available',
+        // Use relative paths; the browser handles resolution relative to SW location
+        icon: '/icon-192.png', 
+        badge: '/icon-192.png',
+        vibrate: [100, 50, 100],
+        tag: 'liquide-alert-' + (data.id || Date.now()),
+        renotify: true,
         data: {
             url: data.data?.url || data.url || '/research'
         },
-        vibrate: data.vibrate || [100, 50, 100],
-        actions: data.actions || [
-            { action: 'open', title: 'Open App', icon: '/icon-192.png' }
+        actions: [
+            { action: 'view', title: 'View Now' },
+            { action: 'close', title: 'Dismiss' }
         ]
     };
 
     event.waitUntil(
-        self.registration.showNotification(data.title, options)
+        self.registration.showNotification(data.title || 'liquide Update', options)
     );
 });
 
 self.addEventListener('notificationclick', (event) => {
-    const notification = event.notification;
-    const action = event.action;
+    event.notification.close();
+    
+    // Stop propagation to prevent browser from handling the click with default URL copy/share dialog
+    event.stopImmediatePropagation();
 
-    notification.close();
+    const urlToOpen = new URL(event.notification.data.url || '/', self.location.origin).href;
 
-    const urlToOpen = new URL(notification.data.url, self.location.origin).href;
-
-    if (action === 'close') {
-        return;
-    }
+    if (event.action === 'close') return;
 
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            for (const client of clientList) {
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+            for (let i = 0; i < windowClients.length; i++) {
+                const client = windowClients[i];
                 if (client.url === urlToOpen && 'focus' in client) {
                     return client.focus();
                 }

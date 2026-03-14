@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Copy, Trash2, Key, Ticket, Shield, AlertCircle, Plus, CheckCircle, Bell, BellOff, ExternalLink, Zap } from "lucide-react";
 import { subscribeToPush, unsubscribeFromPush, getPushSubscription } from "../utils/pushNotifications";
+import { requestFcmToken } from "../utils/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../utils/api";
@@ -101,8 +102,11 @@ const UserDashboard = () => {
                 await unsubscribeFromPush();
                 setIsSubscribed(false);
             } else {
+                // Try both Web Push and FCM for maximum reliability
                 const sub = await subscribeToPush();
-                if (sub) {
+                const fcmToken = await requestFcmToken();
+                
+                if (sub || fcmToken) {
                     setIsSubscribed(true);
                     setShowPushModal(false);
                 }

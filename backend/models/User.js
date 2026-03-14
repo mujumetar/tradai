@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema({
                 auth: String
             }
         }
-    ]
+    ],
+    fcmTokens: [{ type: String }]
 }, { timestamps: true });
 
 // Match user entered password to hashed password in database

@@ -1,10 +1,7 @@
 const nodemailer = require('nodemailer');
 const webpush = require('web-push');
 const User = require('../models/User');
-
-/**
- * Centrally managed notification service for Email and Push.
- */
+const { initFirebase } = require('../lib/firebase');
 
 // Email Transporter setup
 const getTransporter = () => nodemailer.createTransport({
@@ -16,6 +13,9 @@ const getTransporter = () => nodemailer.createTransport({
         pass: process.env.SMTP_PASS
     }
 });
+
+// Init Firebase
+const firebaseAdmin = initFirebase();
 
 /**
  * Notify all relevant users about new content.
@@ -32,35 +32,67 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
         if (type === 'premium') filter.subscription = 'premium';
         if (type === 'free') filter.subscription = 'free';
 
-        const users = await User.find(filter).select('name email pushSubscriptions subscription');
+        const users = await User.find(filter).select('name email pushSubscriptions fcmTokens subscription');
         
-        // ─── 1. Push Notifications ───────────────────────────────────────────
+        // ─── 1. Push Notifications (Web Push) ────────────────────────────────
         const pushPayload = JSON.stringify({
+            id: Date.now(),
             title: title,
             body: body,
-            icon: '/icon-192.png',
-            badge: '/icon-192.png',
-            vibrate: [100, 50, 100],
             data: {
                 url: url,
-            },
-            actions: [
-                { action: 'view', title: 'View Research', icon: '/icon-192.png' },
-                { action: 'close', title: 'Dismiss' }
-            ]
+            }
         });
+        const pushPromises = [];
+
+        // ─── 2. FCM Notifications (Firebase) ───────────────────────────────
+        const fcmPromises = [];
+        const fcmMessages = [];
 
         users.forEach(user => {
+            // Web Push
             if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
                 user.pushSubscriptions.forEach(sub => {
                     pushPromises.push(
                         webpush.sendNotification(sub, pushPayload).catch(err => {
-                            console.error(`[Push Notification Error] ${user.email}:`, err.message);
+                            console.error(`[WebPush Error] ${user.email}:`, err.message);
                         })
                     );
                 });
             }
+
+            // FCM
+            if (user.fcmTokens && user.fcmTokens.length > 0 && firebaseAdmin) {
+                user.fcmTokens.forEach(token => {
+                    fcmMessages.push({
+                        token: token,
+                        notification: { title, body },
+                        data: { url },
+                        webpush: {
+                            fcmOptions: { link: url },
+                            notification: {
+                                actions: [
+                                    { action: 'view', title: 'View Research' },
+                                    { action: 'close', title: 'Dismiss' }
+                                ]
+                            }
+                        }
+                    });
+                });
+            }
         });
+
+        // Batch send FCM (up to 500 at a time is best, but here we just send all)
+        if (fcmMessages.length > 0 && firebaseAdmin) {
+            fcmMessages.forEach(msg => {
+                fcmPromises.push(
+                    firebaseAdmin.messaging().send(msg).catch(err => {
+                        console.error(`[FCM Error]`, err.message);
+                        // If token is invalid, we could remove it here
+                    })
+                );
+            });
+        }
 
         // ─── 2. Email Notifications ──────────────────────────────────────────
         if (sendEmail && process.env.SMTP_USER && process.env.SMTP_USER !== 'your-email@gmail.com') {
@@ -87,7 +119,7 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
         }
 
         // Wait for all push notifications to be dispatched
-        await Promise.all(pushPromises);
+        await Promise.all([...pushPromises, ...fcmPromises]);
         console.log(`[NotificationService] Sent to ${users.length} users successfully (Type: ${type})`);
         
         return {
