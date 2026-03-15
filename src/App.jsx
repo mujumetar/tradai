@@ -43,7 +43,7 @@ const ProtectedAdmin = ({ children }) => {
 };
 
 function App() {
-  const socket = useSocket("http://localhost:5000");
+  const socket = useSocket(window.location.origin);
 
   useEffect(() => {
     onForegroundMessage();

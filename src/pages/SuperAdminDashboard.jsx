@@ -71,7 +71,7 @@ const SuperAdminDashboard = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/_cmd-hq-00x/stats", {
+      const res = await fetch("/api/_cmd-hq-00x/stats", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
@@ -92,7 +92,7 @@ const SuperAdminDashboard = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/_cmd-hq-00x/ui-config", {
+      const res = await fetch("/api/_cmd-hq-00x/ui-config", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -110,7 +110,7 @@ const SuperAdminDashboard = () => {
   const saveUiConfig = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch("http://localhost:5000/api/_cmd-hq-00x/ui-config", {
+      const res = await fetch("/api/_cmd-hq-00x/ui-config", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const SuperAdminDashboard = () => {
     
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch("http://localhost:5000/api/_cmd-hq-00x/kill-switch", {
+      const res = await fetch("/api/_cmd-hq-00x/kill-switch", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +155,7 @@ const SuperAdminDashboard = () => {
   const fetchLogs = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch("http://localhost:5000/api/admin/logs", {
+      const res = await fetch("/api/admin/logs", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
@@ -168,7 +168,7 @@ const SuperAdminDashboard = () => {
   const executeGodCommand = async (endpoint, body) => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch(`http://localhost:5000/api/_cmd-hq-00x/${endpoint}`, {
+      const res = await fetch(`/api/_cmd-hq-00x/${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

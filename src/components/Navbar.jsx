@@ -26,7 +26,7 @@ const Navbar = () => {
     useEffect(() => { setIsOpen(false); setUserMenuOpen(false); }, [location]);
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/public/ui-config")
+        fetch("/api/public/ui-config")
             .then(res => res.json())
             .then(data => {
                 if (data.SIDEBAR_LINKS && Array.isArray(data.SIDEBAR_LINKS) && data.SIDEBAR_LINKS.length > 0) {
