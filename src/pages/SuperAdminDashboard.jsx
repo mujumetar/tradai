@@ -9,6 +9,12 @@ const SuperAdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const PASSPHRASE = "godmode";
 
+  // --- MOBILE STEALTH STATES ---
+  const [tapCount, setTapCount] = useState(0);
+  const [showMobileInput, setShowMobileInput] = useState(false);
+  const [mobilePass, setMobilePass] = useState("");
+  const [tapTimer, setTapTimer] = useState(null);
+
   const [uiConfig, setUiConfig] = useState({
     SIDEBAR_LINKS: [],
     FOOTER_LINKS: [],
@@ -224,21 +230,33 @@ const SuperAdminDashboard = () => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // ONLY ENABLE ON PC/DESKTOP (Non-touch/Keyboard focus)
+      if (window.innerWidth <= 768) return; 
+      
       // Ignore keypresses if already unlocked or typing in an input field
       if (isUnlocked || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
 
       const key = e.key.toLowerCase();
       
-      // Basic check for printable characters
       if (key.length === 1) {
         setInputBuffer((prev) => {
           const newBuffer = (prev + key).slice(-PASSPHRASE.length);
           if (newBuffer === PASSPHRASE) {
-            // ROLE LOCK: Only allow reveal if the logged-in user is a SUPER_ADMIN.
-            // This prevents standard admins from even knowing the panel exists.
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user && user.role === 'SUPER_ADMIN') {
+            const userRaw = localStorage.getItem('user');
+            const user = JSON.parse(userRaw || '{}');
+            console.log("GOD_MODE_ATEMPT_RAW:", userRaw);
+            const userRole = String(user?.role || '').toUpperCase().trim();
+            const userEmail = String(user?.email || '').toLowerCase().trim();
+            const FOUNDER_EMAIL = "muzammilmetar82@gmail.com";
+            
+            console.log("GOD_MODE_ATEMPT_PARSED:", { role: userRole, email: userEmail });
+            
+            // SUPREME ACCESS: If the passphrase is correct AND they are the founder OR super_admin
+            if (userRole === 'SUPER_ADMIN' || userEmail === FOUNDER_EMAIL.toLowerCase()) {
               setIsUnlocked(true);
+              console.log("GOD_MODE_UNLOCKED");
+            } else {
+              alert("CRITICAL CLEARANCE REQUIRED");
             }
             return ""; 
           }
@@ -251,12 +269,89 @@ const SuperAdminDashboard = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isUnlocked]);
 
+  const handleTap = () => {
+    // STRICTLY MOBILE GESTURE
+    const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+    if (!isMobile) return;
+
+    if (tapTimer) clearTimeout(tapTimer);
+    
+    const newCount = tapCount + 1;
+    setTapCount(newCount);
+
+    if (newCount >= 3) {
+      setShowMobileInput(true);
+      setTapCount(0);
+    } else {
+      setTapTimer(setTimeout(() => setTapCount(0), 1000));
+    }
+  };
+
+  const handleMobileUnlock = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userRole = String(user?.role || '').toUpperCase().trim();
+    const userEmail = String(user?.email || '').toLowerCase().trim();
+    const FOUNDER_EMAIL = "muzammilmetar82@gmail.com";
+    
+    console.log("MOBILE_GOD_MODE_ATEMPT:", { pass: mobilePass, role: userRole, email: userEmail });
+
+    if (mobilePass.toLowerCase() === PASSPHRASE && (userRole === 'SUPER_ADMIN' || userEmail === FOUNDER_EMAIL.toLowerCase())) {
+      setIsUnlocked(true);
+      setShowMobileInput(false);
+      console.log("MOBILE_GOD_MODE_UNLOCKED");
+    } else {
+      setMobilePass("");
+      // Add a small shake or alert? Let's just reset for now to stay stealthy.
+      setShowMobileInput(false);
+    }
+  };
+
   // --- STEALTH MODE ---
   // If not unlocked, render the standard NotFound component.
   // This makes the /father route look like a broken link to any unauthorized visitor.
   // The keyboard trigger 'godmode' remains active on this blank slate.
   if (!isUnlocked) {
-    return <NotFound />;
+    const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+    return (
+      <div onClick={isMobile ? handleTap : undefined} className="relative">
+        <NotFound />
+        
+        {showMobileInput && (
+          <div className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="w-full max-w-sm space-y-6">
+              <div className="text-center space-y-2 mb-8">
+                <h2 className="text-white/20 font-black tracking-widest text-xs uppercase italic">// SECURE_TERMINAL_ACCESS //</h2>
+              </div>
+              
+              <input 
+                type="password" 
+                autoFocus
+                placeholder="PROCEED_WITH_CAUTION"
+                value={mobilePass}
+                onChange={(e) => setMobilePass(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleMobileUnlock()}
+                className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-red-500 transition-all text-white font-mono text-center tracking-widest"
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => setShowMobileInput(false)}
+                  className="bg-white/5 text-gray-500 py-4 rounded-3xl font-bold uppercase text-[10px] tracking-widest hover:bg-white/10 transition-colors"
+                >
+                  Abort
+                </button>
+                <button 
+                  onClick={handleMobileUnlock}
+                  className="bg-white text-black py-4 rounded-3xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-200 transition-colors"
+                >
+                  Authenticate
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (
