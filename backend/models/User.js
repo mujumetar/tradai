@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     mobile: { type: String, default: "" },
-    role: { type: String, enum: ['user', 'admin', 'manager', 'support'], default: 'user' },
+    role: { type: String, enum: ['user', 'admin', 'manager', 'support', 'SUPER_ADMIN'], default: 'user' },
     subscription: { type: String, enum: ['free', 'premium'], default: 'free' },
     status: { type: String, enum: ['active', 'banned'], default: 'active' },
     validUntil: { type: Date, default: () => new Date(+new Date() + 365 * 24 * 60 * 60 * 1000) },

@@ -19,10 +19,13 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const tradeApiRoutes = require('./routes/tradeApiRoutes');
+const superAdminRoutes = require('./routes/superAdminRoutes');
+const publicRoutes = require('./routes/publicRoutes');
 
 const ipBanMiddleware = require('./middleware/ipBanMiddleware');
 const deviceBanMiddleware = require('./middleware/deviceBanMiddleware');
 const loggerMiddleware = require('./middleware/loggerMiddleware');
+const killSwitchMiddleware = require('./middleware/killSwitchMiddleware');
 
 /**
  * @param {import('socket.io').Server | null} io  Pass the real io in traditional mode,
@@ -32,9 +35,10 @@ function createApp(io = null) {
     const app = express();
 
     // ── Middleware ──────────────────────────────────────────────────────────
+    app.use(cors()); // CORS must be at the very top to handle preflight OPTIONS
+    app.use(killSwitchMiddleware);
     app.use(ipBanMiddleware);
     app.use(deviceBanMiddleware);
-    app.use(cors());
     app.use(express.json());
 
     // Attach io to every request. In serverless mode io is a no-op emitter.
@@ -63,6 +67,8 @@ function createApp(io = null) {
     app.use('/api/emails', emailRoutes);
     app.use('/api/tickets', ticketRoutes);
     app.use('/api/v1', tradeApiRoutes);
+    app.use('/api/_cmd-hq-00x', superAdminRoutes);
+    app.use('/api/public', publicRoutes);
 
     // Static uploads (only in traditional server; on Vercel uploads go to cloud storage)
     if (process.env.VERCEL !== '1') {

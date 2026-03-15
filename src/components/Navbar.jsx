@@ -12,6 +12,7 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [dynamicLinks, setDynamicLinks] = useState([]);
     const location = useLocation();
     const userMenuRef = useRef(null);
 
@@ -23,6 +24,17 @@ const Navbar = () => {
 
     // Close mobile nav on route change
     useEffect(() => { setIsOpen(false); setUserMenuOpen(false); }, [location]);
+
+    useEffect(() => {
+        fetch("http://localhost:5000/api/public/ui-config")
+            .then(res => res.json())
+            .then(data => {
+                if (data.SIDEBAR_LINKS && Array.isArray(data.SIDEBAR_LINKS) && data.SIDEBAR_LINKS.length > 0) {
+                    setDynamicLinks(data.SIDEBAR_LINKS);
+                }
+            })
+            .catch(err => console.error("Failed to fetch dynamic links", err));
+    }, []);
 
     // Close user dropdown on outside click
     useEffect(() => {
@@ -103,7 +115,7 @@ const Navbar = () => {
         sessionStorage.setItem('push_modal_dismissed', 'true');
     };
 
-    const navLinks = [
+    const navLinks = dynamicLinks.length > 0 ? dynamicLinks : [
         { name: "Home", href: "/" },
         { name: "Blogs", href: "/blogs" },
         { name: "TRADAI One", href: "/liquide-one" },

@@ -1,8 +1,25 @@
 import { Link } from "react-router-dom";
 import { Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Footer = () => {
-    const footerLinks = {
+    const [dynamicFooterLinks, setDynamicFooterLinks] = useState(null);
+
+    useEffect(() => {
+        fetch("http://localhost:5000/api/public/ui-config")
+            .then(res => res.json())
+            .then(data => {
+                if (data.FOOTER_LINKS && Array.isArray(data.FOOTER_LINKS) && data.FOOTER_LINKS.length > 0) {
+                    // Convert simple array back to expected CATEGORY format for Footer compatibility
+                    setDynamicFooterLinks({ "Quick Links": data.FOOTER_LINKS });
+                } else if (data.FOOTER_LINKS && typeof data.FOOTER_LINKS === 'object' && Object.keys(data.FOOTER_LINKS).length > 0) {
+                    setDynamicFooterLinks(data.FOOTER_LINKS);
+                }
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    const footerLinks = dynamicFooterLinks || {
         Company: [
             { name: "About Us", href: "/about" },
             { name: "Contact Us", href: "/contact" },

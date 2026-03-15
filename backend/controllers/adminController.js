@@ -21,6 +21,11 @@ exports.updateUser = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    // SUPER_ADMIN PROTECTION: No one can demote or alter a Super Admin account
+    if (user.role === 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Forbidden. Super Admin identities are protected by System Identity Matrix and cannot be modified.'});
+    }
 
     if (role) user.role = role;
     if (subscription) user.subscription = subscription;
@@ -42,9 +47,16 @@ exports.updateUser = async (req, res) => {
 // @route   PUT /api/admin/users/:id/status
 exports.updateUserStatus = async (req, res) => {
     const { status } = req.body;
-    const user = await User.findByIdAndUpdate(req.params.id, { status }, { new: true }).select('-password');
+    
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    // SUPER_ADMIN PROTECTION: No one can ban or alter status of a Super Admin account
+    if (targetUser.role === 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Forbidden. Super Admin accounts are permanently active.'});
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, { status }, { new: true }).select('-password');
 
     req.io.emit('user_status_updated', { id: user._id, status, name: user.name });
     res.json({ message: `User status updated to ${status}`, user });
@@ -71,8 +83,15 @@ exports.createUser = async (req, res) => {
 // @desc    Delete a user (Admin only)
 // @route   DELETE /api/admin/users/:id
 exports.deleteUser = async (req, res) => {
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
+
+    // SUPER_ADMIN PROTECTION: No one can delete a Super Admin account
+    if (targetUser.role === 'SUPER_ADMIN') {
+         return res.status(403).json({ message: 'CRITICAL FAILURE: Attempted deletion of SUPER ADMIN identity. Action blocked.'});
+    }
+
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
 
     req.io.emit('user_deleted', { id: req.params.id });
     res.json({ message: 'User deleted successfully' });

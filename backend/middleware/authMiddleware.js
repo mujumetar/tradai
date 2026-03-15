@@ -7,8 +7,12 @@ const protect = async (req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecret123');
-            // Fetch fresh user from DB to get latest role/status
+            if (!token || token === 'undefined' || token === 'null') {
+                return res.status(401).json({ message: 'Not authorized, token missing or malformed' });
+            }
+            const secret = process.env.JWT_SECRET || 'supersecret123';
+            const decoded = jwt.verify(token, secret);
+            
             req.user = await User.findById(decoded.id).select('-password');
             if (!req.user) return res.status(401).json({ message: 'Not authorized, user not found' });
             return next();
@@ -23,7 +27,9 @@ const protect = async (req, res, next) => {
 };
 
 const admin = (req, res, next) => {
-    if (req.user && req.user.role === 'admin') {
+    // Allow if role is admin OR if role is SUPER_ADMIN
+    const role = String(req.user?.role || '').toUpperCase();
+    if (req.user && (role === 'ADMIN' || role === 'SUPER_ADMIN')) {
         next();
     } else {
         res.status(401).json({ message: 'Not authorized as an admin' });

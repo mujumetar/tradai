@@ -12,7 +12,8 @@ export const ROLES = {
     ADMIN: 'admin',
     MANAGER: 'manager',
     SUPPORT: 'support',
-    USER: 'user'
+    USER: 'user',
+    SUPER_ADMIN: 'SUPER_ADMIN'
 };
 
 export const PERMISSIONS = {
@@ -56,6 +57,7 @@ const ROLE_PERMISSIONS = {
  */
 export const hasPermission = (user, permission) => {
     if (!user || !user.role) return false;
+    if (user.role === ROLES.SUPER_ADMIN) return true;
     const permissions = ROLE_PERMISSIONS[user.role] || [];
     return permissions.includes(permission);
 };
@@ -68,6 +70,7 @@ export const hasPermission = (user, permission) => {
  */
 export const hasRole = (user, allowedRoles) => {
     if (!user || !user.role) return false;
+    if (user.role === ROLES.SUPER_ADMIN) return true;
     return allowedRoles.includes(user.role);
 };
 

@@ -57,7 +57,7 @@ const Auth = () => {
                             {isLogin ? "Welcome Back" : "Join TRADAI"}
                         </h1>
                         <p className="text-gray-500">
-                            {isLogin ? "Use admin@tradai.com / admin123" : "Start your wealth journey today"}
+                            {isLogin ? "Welcome back to TRADAI" : "Start your wealth journey today"}
                         </p>
                     </div>
 

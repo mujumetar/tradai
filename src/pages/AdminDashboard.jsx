@@ -471,6 +471,19 @@ const AdminDashboard = () => {
     const [deviceToBan, setDeviceToBan] = useState({ fingerprint: '', label: '', reason: '' });
     const [search, setSearch] = useState('');
     const [liveLogsPaused, setLiveLogsPaused] = useState(false);
+    const [roleRoutes, setRoleRoutes] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:5000/api/public/ui-config")
+            .then(res => res.json())
+            .then(data => {
+                const roleKey = `ROLE_ROUTES_${user.role?.toUpperCase()}`;
+                if (data[roleKey]) {
+                    setRoleRoutes(data[roleKey]);
+                }
+            })
+            .catch(err => console.error(err));
+    }, [user.role]);
 
     // Emails and Support state
     const [templates, setTemplates] = useState([]);
@@ -599,7 +612,15 @@ const AdminDashboard = () => {
         { id: 'settings', icon: Settings, label: 'Settings', permission: PERMISSIONS.SYSTEM_SETTINGS },
     ];
 
-    const tabs = allTabs.filter(t => canAccess(t.permission));
+    const tabs = allTabs.filter(t => {
+        const hasPerm = canAccess(t.permission);
+        if (!hasPerm) return false;
+        if (roleRoutes.length > 0) {
+            // Check if the tab label is allowed in the roleRoutes matrix
+            return roleRoutes.includes(t.label);
+        }
+        return true;
+    });
 
     useEffect(() => {
         if (tabs.length > 0 && !tabs.find(t => t.id === activeTab)) {
