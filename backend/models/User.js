@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
             }
         }
     ],
-    fcmTokens: [{ type: String }]
+    fcmTokens: [{ type: String }],
+    watchedTradeIdeas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TradeIdea' }]
 }, { timestamps: true });
 
 // Match user entered password to hashed password in database

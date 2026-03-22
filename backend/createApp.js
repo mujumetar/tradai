@@ -61,6 +61,7 @@ function createApp(io = null) {
 
     // ── Routes ──────────────────────────────────────────────────────────────
     app.use('/api/users', userRoutes);
+    app.use('/api/public', publicRoutes); // Public routes first
     app.use('/api', contentRoutes);
     app.use('/api/admin', adminRoutes);
     app.use('/api/payments', paymentRoutes);
@@ -68,7 +69,6 @@ function createApp(io = null) {
     app.use('/api/tickets', ticketRoutes);
     app.use('/api/v1', tradeApiRoutes);
     app.use('/api/_cmd-hq-00x', superAdminRoutes);
-    app.use('/api/public', publicRoutes);
 
     // Static uploads (only in traditional server; on Vercel uploads go to cloud storage)
     if (process.env.VERCEL !== '1') {

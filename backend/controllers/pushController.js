@@ -63,3 +63,25 @@ exports.removeFcmToken = async (req, res) => {
 
     res.json({ message: 'FCM Token removed' });
 };
+// @desc    Toggle watching a trade idea for live notifications
+// @route   POST /api/users/watch-trade
+exports.toggleWatchTrade = async (req, res) => {
+    const { tradeId } = req.body;
+    if (!tradeId) return res.status(400).json({ message: 'Trade ID required' });
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const index = user.watchedTradeIdeas.indexOf(tradeId);
+    let isWatching = false;
+    if (index === -1) {
+        user.watchedTradeIdeas.push(tradeId);
+        isWatching = true;
+    } else {
+        user.watchedTradeIdeas.splice(index, 1);
+        isWatching = false;
+    }
+
+    await user.save();
+    res.json({ message: `Trade ${isWatching ? 'watched' : 'unwatched'}`, isWatching });
+};

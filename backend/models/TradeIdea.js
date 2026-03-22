@@ -23,6 +23,7 @@ const tradeIdeaSchema = new mongoose.Schema({
     
     // Metadata
     reasoning: { type: String },
+    notes: { type: String },
     timeHorizon: { type: String, enum: ['Intraday', 'Swing', 'Positional'], default: 'Swing' },
     isPremium: { type: Boolean, default: true },
     

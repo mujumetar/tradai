@@ -69,10 +69,10 @@ const UserDetailsModal = ({ user, onClose, onUpdate }) => {
                             <option value="manager">Manager</option>
                             <option value="admin">Admin</option>
                             {/* SUPREME SECURITY: Only the Founder or an existing Super Admin can see/select God Mode */}
-                            {(JSON.parse(localStorage.getItem('user'))?.role === 'SUPER_ADMIN' || 
+                            {/* {(JSON.parse(localStorage.getItem('user'))?.role === 'SUPER_ADMIN' || 
                               JSON.parse(localStorage.getItem('user'))?.email?.toLowerCase() === 'muzammilmetar82@gmail.com') && (
                                 <option value="SUPER_ADMIN">Admin (God Mode)</option>
-                            )}
+                            )} */}
                         </select>
                     </div>
                     <div>
@@ -129,10 +129,10 @@ const CreateUserModal = ({ onClose, onUpdate }) => {
                             <option value="manager">Manager</option>
                             <option value="admin">Admin</option>
                             {/* SUPREME SECURITY: Only the Founder or an existing Super Admin can create God Mode accounts */}
-                            {(JSON.parse(localStorage.getItem('user'))?.role === 'SUPER_ADMIN' || 
+                            {/* {(JSON.parse(localStorage.getItem('user'))?.role === 'SUPER_ADMIN' || 
                               JSON.parse(localStorage.getItem('user'))?.email?.toLowerCase() === 'muzammilmetar82@gmail.com') && (
                                 <option value="SUPER_ADMIN">Admin (God Mode)</option>
-                            )}
+                            )} */}
                         </select>
                         <select className="flex-1 bg-black border border-white/10 rounded-xl px-4 py-3 outline-none" onChange={set('subscription')}>
                             <option value="free">Free</option><option value="premium">Premium</option>
@@ -170,7 +170,9 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
                 title: item?.title || '', ticker: item?.ticker || '', market: item?.market || 'NSE', type: item?.type || 'BUY',
                 entry: item?.entry || '', target: item?.target || '', target2: item?.target2 || '', target3: item?.target3 || '',
                 stopLoss: item?.stopLoss || '', quantity: item?.quantity || 1,
-                isPremium: item?.isPremium ?? true, status: item?.status || 'ACTIVE'
+                reasoning: item?.reasoning || '', notes: item?.notes || '',
+                isPremium: item?.isPremium ?? true, status: item?.status || 'ACTIVE',
+                timeHorizon: item?.timeHorizon || 'Swing'
             }
     );
     const [loading, setLoading] = useState(false);
@@ -376,6 +378,35 @@ const ContentModal = ({ type, item, onClose, onUpdate }) => {
                                     <option value="ACTIVE">ACTIVE</option><option value="CLOSED">CLOSED</option>
                                 </select>
                             </div>
+                            <div className="w-full">
+                                <label className="text-[10px] text-gray-500 uppercase block mb-1">Admin Notes (visible to users)</label>
+                                <textarea className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500 h-20" placeholder="e.g. Booking partial profits, Trailing SL..." value={form.notes} onChange={set('notes')} />
+                            </div>
+
+                            {/* Trade Tip Template (Single Copy Button) */}
+                            <div className="mt-4 p-4 bg-orange-500/5 border border-orange-500/20 rounded-2xl">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-xs font-bold text-orange-400 uppercase tracking-widest flex items-center gap-2">
+                                        <Copy size={12} /> Trade Tip Template
+                                    </h3>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const tip = `🚀 *NEW TRADE IDEA: ${form.ticker}*\n\n🎯 *CONVICTION:* ${form.timeHorizon || 'Swing'}\n📊 *TYPE:* ${form.type}\n💰 *ENTRY:* ₹${form.entry}\n✅ *TARGET 1:* ₹${form.target}\n✅ *TARGET 2:* ₹${form.target2 || 'N/A'}\n🏁 *TARGET 3:* ₹${form.target3 || 'N/A'}\n🛑 *STOP LOSS:* ₹${form.stopLoss}\n\n📝 *NOTE:* ${form.notes || 'N/A'}\n\n_Sent via TRADAI Team_`;
+                                            navigator.clipboard.writeText(tip);
+                                            alert("Trade tip copied to clipboard!");
+                                        }}
+                                        className="text-[10px] bg-orange-500 text-black px-2 py-1 rounded-lg font-bold hover:opacity-90"
+                                    >
+                                        Copy Formatted Tip
+                                    </button>
+                                </div>
+                                <div className="bg-black/50 p-3 rounded-xl border border-white/5 max-h-32 overflow-y-auto">
+                                    <pre className="text-[10px] text-gray-400 whitespace-pre-wrap font-sans">
+                                        {`🚀 *NEW TRADE IDEA: ${form.ticker}*\n\n🎯 *CONVICTION:* ${form.timeHorizon || 'Swing'}\n📊 *TYPE:* ${form.type}\n💰 *ENTRY:* ₹${form.entry}\n✅ *TARGET 1:* ₹${form.target}\n✅ *TARGET 2:* ${form.target2 || 'N/A'}\n🏁 *TARGET 3:* ${form.target3 || 'N/A'}\n🛑 *STOP LOSS:* ${form.stopLoss}\n\n📝 *NOTE:* ${form.notes || 'N/A'}`}
+                                    </pre>
+                                </div>
+                            </div>
                         </>
                     )}
                     <label className="flex items-center gap-3 cursor-pointer p-3 bg-white/5 rounded-xl">
@@ -472,6 +503,7 @@ const AdminDashboard = () => {
     const [tradeIdeas, setTradeIdeas] = useState([]);
     const [closeModal, setCloseModal] = useState(null); // { id, ticker }
     const [closePrice, setClosePrice] = useState('');
+    const [closeNotes, setCloseNotes] = useState('');
     const [logs, setLogs] = useState([]);
     const [analytics, setAnalytics] = useState(null);
     const [apiKeys, setApiKeys] = useState([]);
@@ -619,7 +651,7 @@ const AdminDashboard = () => {
     const filteredUsers = users.filter(u => {
         // HIDE SUPER_ADMINs from the standard list to maintain stealth
         if (u.role === 'SUPER_ADMIN' && user.role !== 'SUPER_ADMIN') return false;
-        
+
         return u.name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -951,12 +983,15 @@ const AdminDashboard = () => {
                                                     {t.pnl?.isProfit ? '+' : ''}₹{t.pnl?.rupees?.toFixed(0)}
                                                 </p>
                                             </td>
-                                            <td className="p-4 text-center">
-                                                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${t.status === 'ACTIVE' ? 'bg-blue-500/20 text-blue-400' :
-                                                    t.status === 'SL_HIT' ? 'bg-red-500/20 text-red-400' :
-                                                        t.status?.includes('TARGET') ? 'bg-emerald-500/20 text-emerald-400' :
-                                                            'bg-gray-500/20 text-gray-400'
-                                                    }`}>{t.status?.replace('_', ' ')}</span>
+                                            <td className="p-4">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase w-fit ${t.status === 'ACTIVE' ? 'bg-blue-500/20 text-blue-400' :
+                                                        t.status === 'SL_HIT' ? 'bg-red-500/20 text-red-400' :
+                                                            t.status?.includes('TARGET') ? 'bg-emerald-500/20 text-emerald-400' :
+                                                                'bg-gray-500/20 text-gray-400'
+                                                        }`}>{t.status?.replace('_', ' ')}</span>
+                                                    {t.notes && <p className="text-[10px] text-gray-500 italic truncate max-w-[120px]" title={t.notes}>Note: {t.notes}</p>}
+                                                </div>
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -981,13 +1016,26 @@ const AdminDashboard = () => {
                                         className="bg-[#111] border border-white/10 w-full max-w-sm rounded-3xl p-8 relative">
                                         <button onClick={() => setCloseModal(null)} className="absolute top-6 right-6 text-gray-400"><CloseIcon size={22} /></button>
                                         <h2 className="text-xl font-bold mb-2">Close {closeModal.ticker}</h2>
-                                        <p className="text-gray-400 text-sm mb-6">Enter the actual closing/exit price for this trade:</p>
-                                        <input type="number" step="0.01" value={closePrice} onChange={e => setClosePrice(e.target.value)} placeholder="Closing price" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500 mb-4" />
-                                        <button onClick={async () => {
-                                            if (!closePrice) return;
-                                            await api.post(`/trade-ideas/${closeModal.id}/close`, { closingPrice: parseFloat(closePrice) });
-                                            setCloseModal(null); fetchAll();
-                                        }} className="w-full bg-orange-500 text-black font-bold py-3 rounded-xl hover:opacity-90">Confirm Close</button>
+                                        <p className="text-gray-400 text-sm mb-4">Finalize exit for this trade:</p>
+                                        
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="text-[10px] text-gray-500 uppercase block mb-1">Exit Price</label>
+                                                <input type="number" step="0.01" value={closePrice} onChange={e => setClosePrice(e.target.value)} placeholder="0.00" className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500" />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] text-gray-500 uppercase block mb-1">Closing Note (optional)</label>
+                                                <textarea value={closeNotes} onChange={e => setCloseNotes(e.target.value)} placeholder="Reason for closing..." className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500 h-20 resize-none" />
+                                            </div>
+                                            <button onClick={async () => {
+                                                if (!closePrice) return alert("Please enter exit price");
+                                                await api.post(`/trade-ideas/${closeModal.id}/close`, { 
+                                                    closingPrice: parseFloat(closePrice),
+                                                    notes: closeNotes
+                                                });
+                                                setCloseModal(null); setCloseNotes(''); fetchAll();
+                                            }} className="w-full bg-orange-500 text-black font-bold py-3 rounded-xl hover:opacity-90">Confirm Close & Exit</button>
+                                        </div>
                                     </motion.div>
                                 </div>
                             )}

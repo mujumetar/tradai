@@ -158,3 +158,72 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
         return { sent: 0, failed: 0, total: 0, error: err.message };
     }
 };
+/**
+ * Notify specific users watching a particular trade about live price updates.
+ * @param {Object} options 
+ */
+exports.notifyLivePrice = async ({ tradeIdea, price, pnlPercent }) => {
+    try {
+        const users = await User.find({
+            watchedTradeIdeas: tradeIdea._id
+        }).select('pushSubscriptions fcmTokens email subscription');
+
+        if (!users.length) return;
+
+        const title = `Live: ${tradeIdea.ticker} @ ₹${price}`;
+        const body = `${tradeIdea.ticker} is ${pnlPercent >= 0 ? 'UP' : 'DOWN'} ${Math.abs(pnlPercent)}% today.\nStatus: ${tradeIdea.status}`;
+        const tag = `live-${tradeIdea.ticker}`; // Tag ensures notifications are overwritten/updated, not stacked
+
+        const pushPayload = JSON.stringify({
+            notification: {
+                title,
+                body,
+                tag,
+                icon: '/apple-touch-icon.png',
+                actions: [
+                    { action: 'close', title: 'Close Tracking' }
+                ]
+            },
+            data: { url: '/research' }
+        });
+
+        const promises = [];
+        users.forEach(user => {
+            // Web Push with tag replacement
+            if (user.pushSubscriptions) {
+                user.pushSubscriptions.forEach(sub => {
+                    promises.push(webpush.sendNotification(sub, pushPayload).catch(() => {}));
+                });
+            }
+
+            // FCM
+            if (user.fcmTokens && firebaseAdmin) {
+                user.fcmTokens.forEach(token => {
+                    promises.push(firebaseAdmin.messaging().send({
+                        token,
+                        notification: { title, body },
+                        android: { 
+                            notification: { 
+                                tag, 
+                                clickAction: 'OPEN_RESEARCH',
+                                sticky: false,
+                                visibility: 'public'
+                            } 
+                        },
+                        webpush: {
+                            notification: { 
+                                tag,
+                                actions: [{ action: 'close', title: 'Dismiss' }]
+                            },
+                            fcmOptions: { link: '/research' }
+                        }
+                    }).catch(() => {}));
+                });
+            }
+        });
+
+        await Promise.all(promises);
+    } catch (err) {
+        console.error('[NotificationService] Live notify failed:', err.message);
+    }
+};

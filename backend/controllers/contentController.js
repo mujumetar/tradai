@@ -133,9 +133,12 @@ exports.createTradeIdea = async (req, res) => {
         // Automation: Send automated notifications (Push + Email)
         const { notifyUsers } = require('../services/notificationService');
         
+        let body = `Conviction: ${idea.timeHorizon || 'High'}\nQty: ${idea.quantity}\nType: ${idea.type}\nEntry: ${idea.entry}\nTarget: ${idea.target}\nStop Loss: ${idea.stopLoss}`;
+        if (idea.notes) body += `\n\nNote: ${idea.notes}`;
+
         notifyUsers({
             title: `🚀 New Trade Idea: ${idea.ticker}`,
-            body: `Conviction: ${idea.timeHorizon || 'High'}\nQty: ${idea.quantity}\nType: ${idea.type}\nEntry: ${idea.entry}\nTarget: ${idea.target}\nStop Loss: ${idea.stopLoss}`,
+            body,
             url: '/research',
             type: idea.isPremium ? 'premium' : 'all',
             sendEmail: true
@@ -202,7 +205,7 @@ exports.getLivePrice = async (req, res) => {
 // @desc    Close a trade idea (manual exit)
 // @route   POST /api/trade-ideas/:id/close
 exports.closeTradeIdea = async (req, res) => {
-    const { closingPrice } = req.body;
+    const { closingPrice, notes } = req.body;
     try {
         const idea = await TradeIdea.findByIdAndUpdate(
             req.params.id,
@@ -212,6 +215,7 @@ exports.closeTradeIdea = async (req, res) => {
                 closedAt: new Date(),
                 currentPrice: parseFloat(closingPrice),
                 lastPriceUpdate: new Date(),
+                notes: notes || undefined // Update notes if provided on close
             },
             { new: true }
         );

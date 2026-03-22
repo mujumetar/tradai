@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { registerUser, authUser, getUserProfile, getMyApiKeys, createMyApiKey, deleteMyApiKey } = require('../controllers/userController');
-const { saveSubscription, removeSubscription, saveFcmToken, removeFcmToken } = require('../controllers/pushController');
+const { saveSubscription, removeSubscription, saveFcmToken, removeFcmToken, toggleWatchTrade } = require('../controllers/pushController');
 const { proxyLimo } = require('../controllers/limoController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -9,6 +9,9 @@ router.post('/', registerUser);
 router.post('/login', authUser);
 router.get('/profile', protect, getUserProfile);
 router.post('/limo-proxy', protect, proxyLimo);
+
+// Watch trade for live updates
+router.post('/watch-trade', protect, toggleWatchTrade);
 
 // Push Notifications (Web Push)
 router.post('/push-subscribe', protect, saveSubscription);
