@@ -2,14 +2,20 @@
   "nodes": [
     {
       "parameters": {
-        "updates": ["message", "callback_query"],
+        "updates": [
+          "message",
+          "callback_query"
+        ],
         "additionalFields": {}
       },
       "id": "7708ff27-e5e5-4de3-9234-411f316481be",
       "name": "Telegram Trigger",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
-      "position": [-672, 528],
+      "position": [
+        -672,
+        528
+      ],
       "webhookId": "market-shark-telegram"
     },
     {
@@ -22,14 +28,23 @@
       "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [-672, 688]
+      "position": [
+        -672,
+        688
+      ]
     },
     {
       "parameters": {
         "rule": {
           "interval": [
-            { "field": "cronExpression", "expression": "15 3 * * 1-5" },
-            { "field": "cronExpression", "expression": "0/15 3-10 * * 1-5" }
+            {
+              "field": "cronExpression",
+              "expression": "15 3 * * 1-5"
+            },
+            {
+              "field": "cronExpression",
+              "expression": "0/15 3-10 * * 1-5"
+            }
           ]
         }
       },
@@ -37,7 +52,10 @@
       "name": "Scheduled Scanner",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.1,
-      "position": [-672, 848]
+      "position": [
+        -672,
+        848
+      ]
     },
     {
       "parameters": {
@@ -46,7 +64,10 @@
       "id": "766e90cf-eb7e-475a-8a06-84ebad8894c8",
       "name": "Input Normalizer",
       "type": "n8n-nodes-base.code",
-      "position": [-416, 688]
+      "position": [
+        -416,
+        688
+      ]
     },
     {
       "parameters": {
@@ -58,16 +79,89 @@
       "id": "3efbd4de-169e-4a43-8d1c-da9f253d9bea",
       "name": "Typing Indicator",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [-192, 688]
+      "position": [
+        -192,
+        688
+      ]
     },
     {
       "parameters": {
         "rules": {
-          "values": [\n            { "conditions": { "combinator": "and", "conditions": [ { "leftValue": "={{ $json.intent }}", "rightValue": "start", "operator": { "type": "string", "operation": "equals" } } ] }, "renameOutput": true, "outputKey": "start" },\n            { "conditions": { "combinator": "and", "conditions": [ { "leftValue": "={{ $json.intent }}", "rightValue": "help", "operator": { "type": "string", "operation": "equals" } } ] }, "renameOutput": true, "outputKey": "help" },\n            { "conditions": { "combinator": "and", "conditions": [ { "leftValue": "={{ $json.intent }}", "rightValue": "market_analysis", "operator": { "type": "string", "operation": "equals" } } ] }, "renameOutput": true, "outputKey": "market_analysis" },\n            { "conditions": { "combinator": "and", "conditions": [ { "leftValue": "={{ $json.intent }}", "rightValue": "chat", "operator": { "type": "string", "operation": "equals" } } ] }, "renameOutput": true, "outputKey": "chat" }\n          ]\n        }\n      },
+          "values": [\n            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },\n            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "help"
+            },\n            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "market_analysis",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "market_analysis"
+            },\n            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "chat",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "chat"
+            }\n
+          ]\n
+        }\n
+      },
       "id": "02d26ec3-8ea6-41ac-9839-407810177cf5",
       "name": "Intent Router",
       "type": "n8n-nodes-base.switch",
-      "position": [32, 688]
+      "position": [
+        32,
+        688
+      ]
     },
     {
       "parameters": {
@@ -76,7 +170,10 @@
       "id": "8259f457-98f4-483d-a81e-750c6b3c12a1",
       "name": "Start Message",
       "type": "n8n-nodes-base.code",
-      "position": [256, 448]
+      "position": [
+        256,
+        448
+      ]
     },
     {
       "parameters": {
@@ -85,7 +182,10 @@
       "id": "38d2f689-3dfc-49a7-b6f1-00a122025cbb",
       "name": "Help Message",
       "type": "n8n-nodes-base.code",
-      "position": [256, 608]
+      "position": [
+        256,
+        608
+      ]
     },
     {
       "parameters": {
@@ -94,14 +194,22 @@
       "id": "8f1f2e90-d61f-450c-9773-75339a17d1c5",
       "name": "Data Source Config",
       "type": "n8n-nodes-base.code",
-      "position": [256, 928]
+      "position": [
+        256,
+        928
+      ]
     },
     {
-      "parameters": { "url": "={{ $json.apiConfig.ohlcvUrl }}" },
+      "parameters": {
+        "url": "={{ $json.apiConfig.ohlcvUrl }}"
+      },
       "id": "4e47b0cd-0635-44d4-a169-490548f7a2e0",
       "name": "Fetch OHLCV Data",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [480, 928]
+      "position": [
+        480,
+        928
+      ]
     },
     {
       "parameters": {
@@ -110,7 +218,10 @@
       "id": "265b0f9f-d532-4a35-a96b-142cdb7bf45f",
       "name": "Technical Analysis Engine",
       "type": "n8n-nodes-base.code",
-      "position": [704, 928]
+      "position": [
+        704,
+        928
+      ]
     },
     {
       "parameters": {
@@ -122,7 +233,10 @@
       "id": "fffe3fc9-7533-43cf-b649-3d5e0814557f",
       "name": "Grok — Market Analysis",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [928, 928]
+      "position": [
+        928,
+        928
+      ]
     },
     {
       "parameters": {
@@ -131,7 +245,10 @@
       "id": "bfe8dda7-0ef7-478d-b9b4-046ff732f3fa",
       "name": "Response Formatter",
       "type": "n8n-nodes-base.code",
-      "position": [1152, 928]
+      "position": [
+        1152,
+        928
+      ]
     },
     {
       "parameters": {
@@ -143,7 +260,10 @@
       "id": "592efb57-5015-4d82-85b5-c4dde8949680",
       "name": "Send Chart + Tip",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [1600, 816]
+      "position": [
+        1600,
+        816
+      ]
     },
     {
       "parameters": {
@@ -155,6 +275,118 @@
       "id": "de66037f-4ae8-4409-bb64-3139c69457e4",
       "name": "Send Full Analysis",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [1600, 1008]
+      "position": [
+        1600,
+        1008
+      ]
     }
-  ],\n  "connections": {\n    "Telegram Trigger": { "main": [[{ "node": "Input Normalizer", "index": 0 }]] },\n    "Webhook Trigger": { "main": [[{ "node": "Input Normalizer", "index": 0 }]] },\n    "Input Normalizer": { "main": [[{ "node": "Typing Indicator", "index": 0 }]] },\n    "Typing Indicator": { "main": [[{ "node": "Intent Router", "index": 0 }]] },\n    "Intent Router": {\n      "main": [\n        [{ "node": "Start Message", "index": 0 }],\n        [{ "node": "Help Message", "index": 0 }],\n        [{ "node": "Data Source Config", "index": 0 }]\n      ]\n    },\n    "Data Source Config": { "main": [[{ "node": "Fetch OHLCV Data", "index": 0 }]] },\n    "Fetch OHLCV Data": { "main": [[{ "node": "Technical Analysis Engine", "index": 0 }]] },\n    "Technical Analysis Engine": { "main": [[{ "node": "Grok — Market Analysis", "index": 0 }]] },\n    "Grok — Market Analysis": { "main": [[{ "node": "Response Formatter", "index": 0 }]] },\n    "Response Formatter": { "main": [[{ "node": "Send Chart + Tip", "index": 0 }]] },\n    "Send Chart + Tip": { "main": [[{ "node": "Send Full Analysis", "index": 0 }]] }\n  }\n}
+  ],\n  "connections": {\n    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Input Normalizer",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Input Normalizer",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Input Normalizer": {
+      "main": [
+        [
+          {
+            "node": "Typing Indicator",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Typing Indicator": {
+      "main": [
+        [
+          {
+            "node": "Intent Router",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Intent Router": {\n      "main": [\n        [
+          {
+            "node": "Start Message",
+            "index": 0
+          }
+        ],\n        [
+          {
+            "node": "Help Message",
+            "index": 0
+          }
+        ],\n        [
+          {
+            "node": "Data Source Config",
+            "index": 0
+          }
+        ]\n
+      ]\n
+    },\n    "Data Source Config": {
+      "main": [
+        [
+          {
+            "node": "Fetch OHLCV Data",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Fetch OHLCV Data": {
+      "main": [
+        [
+          {
+            "node": "Technical Analysis Engine",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Technical Analysis Engine": {
+      "main": [
+        [
+          {
+            "node": "Grok — Market Analysis",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Grok — Market Analysis": {
+      "main": [
+        [
+          {
+            "node": "Response Formatter",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Response Formatter": {
+      "main": [
+        [
+          {
+            "node": "Send Chart + Tip",
+            "index": 0
+          }
+        ]
+      ]
+    },\n    "Send Chart + Tip": {
+      "main": [
+        [
+          {
+            "node": "Send Full Analysis",
+            "index": 0
+          }
+        ]
+      ]
+    }\n
+  }\n
+}
