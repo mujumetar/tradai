@@ -493,7 +493,7 @@ const StatCard = ({ label, value, sub, color = 'orange' }) => {
 
 const AdminDashboard = () => {
     const user = JSON.parse(localStorage.getItem('user')) || {};
-    const socket = useSocket(API_BASE_URL || window.location.origin);
+    const { on, off } = useSocket(API_BASE_URL || window.location.origin);
     const [notifications, setNotifications] = useState([]);
     const [searchParams, setSearchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'analytics';
@@ -585,16 +585,28 @@ const AdminDashboard = () => {
     useEffect(() => { fetchAll(); }, [fetchAll]);
 
     useEffect(() => {
-        if (!socket) return;
-        socket.on('viewer_count', c => setViewers(c));
-        socket.on('new_log', log => {
+        const handleViewerCount = c => setViewers(c);
+        const handleNewLog = log => {
             if (!liveLogsPaused) setLogs(p => [log, ...p].slice(0, 200));
-        });
-        socket.on('new_user', u => { addNotification(`New user: ${u.name}`); fetchAll(); });
-        socket.on('subscription_updated', d => { addNotification(`Upgraded: ${d.name}`); fetchAll(); });
-        socket.on('new_payment', d => { addNotification(`Payment: ₹${d.amount} from ${d.user}`); fetchAll(); });
-        return () => { socket.off('viewer_count'); socket.off('new_log'); socket.off('new_user'); socket.off('subscription_updated'); socket.off('new_payment'); };
-    }, [socket, fetchAll]);
+        };
+        const handleNewUser = u => { addNotification(`New user: ${u.name}`); fetchAll(); };
+        const handleSubUpdated = d => { addNotification(`Upgraded: ${d.name}`); fetchAll(); };
+        const handleNewPayment = d => { addNotification(`Payment: ₹${d.amount} from ${d.user}`); fetchAll(); };
+
+        on('viewer_count', handleViewerCount);
+        on('new_log', handleNewLog);
+        on('new_user', handleNewUser);
+        on('subscription_updated', handleSubUpdated);
+        on('new_payment', handleNewPayment);
+
+        return () => {
+            off('viewer_count', handleViewerCount);
+            off('new_log', handleNewLog);
+            off('new_user', handleNewUser);
+            off('subscription_updated', handleSubUpdated);
+            off('new_payment', handleNewPayment);
+        };
+    }, [on, off, fetchAll, liveLogsPaused]);
 
     const handleDeleteUser = async id => {
         if (!confirm('Delete this user permanently?')) return;
@@ -1017,7 +1029,7 @@ const AdminDashboard = () => {
                                         <button onClick={() => setCloseModal(null)} className="absolute top-6 right-6 text-gray-400"><CloseIcon size={22} /></button>
                                         <h2 className="text-xl font-bold mb-2">Close {closeModal.ticker}</h2>
                                         <p className="text-gray-400 text-sm mb-4">Finalize exit for this trade:</p>
-                                        
+
                                         <div className="space-y-4">
                                             <div>
                                                 <label className="text-[10px] text-gray-500 uppercase block mb-1">Exit Price</label>
@@ -1029,7 +1041,7 @@ const AdminDashboard = () => {
                                             </div>
                                             <button onClick={async () => {
                                                 if (!closePrice) return alert("Please enter exit price");
-                                                await api.post(`/trade-ideas/${closeModal.id}/close`, { 
+                                                await api.post(`/trade-ideas/${closeModal.id}/close`, {
                                                     closingPrice: parseFloat(closePrice),
                                                     notes: closeNotes
                                                 });

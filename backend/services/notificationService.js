@@ -192,7 +192,7 @@ exports.notifyLivePrice = async ({ tradeIdea, price, pnlPercent }) => {
             // Web Push with tag replacement
             if (user.pushSubscriptions) {
                 user.pushSubscriptions.forEach(sub => {
-                    promises.push(webpush.sendNotification(sub, pushPayload).catch(() => {}));
+                    promises.push(webpush.sendNotification(sub, pushPayload).catch(() => { }));
                 });
             }
 
@@ -202,22 +202,22 @@ exports.notifyLivePrice = async ({ tradeIdea, price, pnlPercent }) => {
                     promises.push(firebaseAdmin.messaging().send({
                         token,
                         notification: { title, body },
-                        android: { 
-                            notification: { 
-                                tag, 
+                        android: {
+                            notification: {
+                                tag,
                                 clickAction: 'OPEN_RESEARCH',
                                 sticky: false,
                                 visibility: 'public'
-                            } 
+                            }
                         },
                         webpush: {
-                            notification: { 
+                            notification: {
                                 tag,
                                 actions: [{ action: 'close', title: 'Dismiss' }]
                             },
                             fcmOptions: { link: '/research' }
                         }
-                    }).catch(() => {}));
+                    }).catch(() => { }));
                 });
             }
         });

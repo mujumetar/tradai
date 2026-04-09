@@ -5,6 +5,11 @@ const webpush = require('web-push');
 const axios = require('axios');
 const { fetchLivePrice } = require('../services/portfolioAutoUpdater');
 
+// ── Simple in-memory rate limiter for live-prices polling ─────────────────────
+// Prevents a single user from hammering the endpoint faster than 1 req/s
+const rateLimitMap = new Map();
+const RATE_LIMIT_MS = 1000; // min 1s between calls per IP
+
 // @desc    Get all blogs
 // @route   GET /api/blogs
 exports.getBlogs = async (req, res) => {
@@ -172,18 +177,63 @@ exports.searchTickers = async (req, res) => {
     try {
         const { q } = req.query;
         if (!q) return res.json([]);
-        const { data } = await axios.get(`https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=15&newsCount=0`, {
-            headers: { 'User-Agent': 'Mozilla/5.0' },
-            timeout: 5000
-        });
-        const results = (data.quotes || []).map(qt => ({
-            symbol: qt.symbol,
-            name: qt.shortname || qt.longname || qt.symbol,
-            exchange: qt.exchange,
-            type: qt.quoteType
-        }));
+
+        const performSearch = async (query) => {
+            const { data } = await axios.get(
+                `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=15&newsCount=0`,
+                { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 }
+            );
+            return data.quotes || [];
+        };
+
+        let quotes = await performSearch(q);
+
+        // If no results and query had spaces, try without spaces (common for NSE options)
+        if (quotes.length === 0 && q.includes(' ')) {
+            const noSpaceQ = q.replace(/\s+/g, '');
+            quotes = await performSearch(noSpaceQ);
+        }
+
+        // If query looks like an NSE Option (e.g. "NIFTY 22900 PE")
+        const optionMatch = q.toUpperCase().replace(/\s+/g, '').match(/^(NIFTY|BANKNIFTY|FINNIFTY)(\d+)(CE|PE)$/);
+        if (optionMatch) {
+            const [_, base, strike, type] = optionMatch;
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            const now = new Date();
+            let current = new Date(now);
+            
+            // Add a few expiries as suggestions
+            for (let i = 0; i < 2; i++) {
+                const nextThurs = new Date(current);
+                nextThurs.setDate(current.getDate() + (4 + 7 - current.getDay()) % 7);
+                const yy = String(nextThurs.getFullYear()).slice(-2);
+                const m = nextThurs.getMonth() + 1;
+                const mmm = months[nextThurs.getMonth()];
+                const dd = String(nextThurs.getDate()).padStart(2, '0');
+                
+                const sym1 = `${base}${yy}${m}${dd}${strike}${type}.NS`;
+                const sym2 = `${base}${yy}${mmm}${strike}${type}.NS`;
+                
+                results.unshift({
+                    symbol: sym2,
+                    name: `Auto-Resolve: ${q} (${mmm} Expiry)`,
+                    exchange: 'NSE',
+                    type: 'OPTION'
+                }, {
+                    symbol: sym1,
+                    name: `Auto-Resolve: ${q} (${m}/${dd} Expiry)`,
+                    exchange: 'NSE',
+                    type: 'OPTION'
+                });
+                
+                current = new Date(nextThurs);
+                current.setDate(current.getDate() + 1);
+            }
+        }
+
         res.json(results);
     } catch(err) {
+        console.error('[Search] Failed:', err.message);
         res.status(500).json({ message: 'Search failed' });
     }
 };
@@ -199,6 +249,102 @@ exports.getLivePrice = async (req, res) => {
         res.json({ price });
     } catch(err) {
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Get live prices only (lightweight — for 3-second frontend polling)
+// @route   GET /api/live-prices
+exports.getLivePrices = async (req, res) => {
+    try {
+        // Very light rate-limit: same IP can't call faster than 1 req/s
+        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+        const now = Date.now();
+        const lastCall = rateLimitMap.get(ip) || 0;
+        if (now - lastCall < RATE_LIMIT_MS) {
+            return res.status(429).json({ message: 'Too fast — slow down a bit.' });
+        }
+        rateLimitMap.set(ip, now);
+
+        // Only select the fields the frontend needs — very cheap
+        const ideas = await TradeIdea.find(
+            {},
+            '_id ticker market type entry stopLoss target target2 target3 quantity portfolioAmount currentPrice lastPriceUpdate status frozen closingPrice closedAt'
+        ).lean(); // .lean() = plain JS objects, ~3x faster than Mongoose docs
+
+        // ── Smart Stale-Data Trigger ────────────────────────────────────────────
+        // If any ACTIVE call hasn't been updated in the last 30 seconds,
+        // fire runAutoUpdate() in the background (non-awaited, non-blocking).
+        // This keeps prices genuinely fresh without waiting for the 60s cron.
+        const STALE_THRESHOLD_MS = 30 * 1000; // 30 seconds
+        const staleCutoff = new Date(Date.now() - STALE_THRESHOLD_MS);
+        const hasStaleActive = ideas.some(idea =>
+            ['ACTIVE', 'TARGET1_HIT', 'TARGET2_HIT'].includes(idea.status) &&
+            (!idea.lastPriceUpdate || new Date(idea.lastPriceUpdate) < staleCutoff)
+        );
+        if (hasStaleActive) {
+            const { runAutoUpdate } = require('../services/portfolioAutoUpdater');
+            runAutoUpdate().catch(err => console.error('[LivePrices] Background refresh error:', err.message));
+        }
+
+        // Compute PnL on the fly for each trade (same logic as the virtual)
+        const payload = ideas.map(idea => {
+            let cmp = idea.closingPrice || idea.currentPrice;
+            let pnl = null;
+
+            if (cmp) {
+                // Apply status-based floor/cap (mirrors the virtual)
+                if (!idea.closedAt) {
+                    if (idea.type === 'BUY') {
+                        if (idea.status === 'TARGET3_HIT' && idea.target3) cmp = Math.max(cmp, idea.target3);
+                        else if (idea.status === 'TARGET2_HIT' && idea.target2) cmp = Math.max(cmp, idea.target2);
+                        else if (idea.status === 'TARGET1_HIT' && idea.target) cmp = Math.max(cmp, idea.target);
+                    } else {
+                        if (idea.status === 'TARGET3_HIT' && idea.target3) cmp = Math.min(cmp, idea.target3);
+                        else if (idea.status === 'TARGET2_HIT' && idea.target2) cmp = Math.min(cmp, idea.target2);
+                        else if (idea.status === 'TARGET1_HIT' && idea.target) cmp = Math.min(cmp, idea.target);
+                    }
+                }
+
+                const qty = idea.quantity || (idea.portfolioAmount ? idea.portfolioAmount / idea.entry : 1);
+                const investedAmount = parseFloat((qty * idea.entry).toFixed(2));
+                const diff = idea.type === 'BUY' ? (cmp - idea.entry) : (idea.entry - cmp);
+                const rupees = parseFloat((diff * qty).toFixed(2));
+                const percent = parseFloat(((diff / idea.entry) * 100).toFixed(2));
+
+                pnl = {
+                    qty: parseFloat(qty.toFixed(2)),
+                    investedAmount,
+                    rupees,
+                    percent,
+                    isProfit: rupees >= 0,
+                    currentValue: parseFloat((investedAmount + rupees).toFixed(2)),
+                    frozen: ['SL_HIT', 'TARGET3_HIT', 'CLOSED'].includes(idea.status),
+                    currencies: {
+                        USD: parseFloat((rupees * 0.012).toFixed(2)),
+                        EUR: parseFloat((rupees * 0.011).toFixed(2)),
+                        GBP: parseFloat((rupees * 0.0095).toFixed(2)),
+                        AED: parseFloat((rupees * 0.044).toFixed(2)),
+                        SGD: parseFloat((rupees * 0.016).toFixed(2))
+                    }
+                };
+            }
+
+            return {
+                _id: idea._id,
+                currentPrice: idea.currentPrice,
+                status: idea.status,
+                lastPriceUpdate: idea.lastPriceUpdate,
+                frozen: ['SL_HIT', 'TARGET3_HIT', 'CLOSED'].includes(idea.status),
+                pnl
+            };
+        });
+
+        // Set cache headers: browser/CDN can cache for up to 2s
+        res.setHeader('Cache-Control', 'public, max-age=2, stale-while-revalidate=1');
+        res.json(payload);
+    } catch (err) {
+        console.error('[LivePrices] Error:', err.message);
+        res.status(500).json({ message: 'Failed to fetch live prices' });
     }
 };
 

@@ -9,11 +9,13 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const webpush = require('web-push');
-webpush.setVapidDetails(
-    'mailto:support@liquide.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        'mailto:support@liquide.com',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+}
 
 const connectDB = require('../lib/db');
 const createApp = require('../createApp');

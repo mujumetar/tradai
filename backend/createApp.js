@@ -41,9 +41,22 @@ function createApp(io = null) {
     app.use(deviceBanMiddleware);
     app.use(express.json());
 
-    // Attach io to every request. In serverless mode io is a no-op emitter.
+    // Attach io to every request. In serverless mode io is a no-op emitter but also triggers Pusher.
     const safeIo = io || {
-        emit: () => {},
+        emit: (event, data) => {
+            // Trigger Pusher for essential events if pusher is configured
+            if (process.env.PUSHER_APP_ID && process.env.PUSHER_KEY) {
+                const Pusher = require('pusher');
+                const p = new Pusher({
+                    appId: process.env.PUSHER_APP_ID,
+                    key: process.env.PUSHER_KEY,
+                    secret: process.env.PUSHER_SECRET,
+                    cluster: process.env.PUSHER_CLUSTER,
+                    useTLS: true,
+                });
+                p.trigger('admin-alerts', event, data).catch(() => {});
+            }
+        },
         to: () => ({ emit: () => {} }),
     };
     app.use((req, _res, next) => {
@@ -83,20 +96,32 @@ function createApp(io = null) {
 
     // Cron / health endpoint — used by Vercel Cron or any external pinger
     // to trigger the portfolio auto-updater without a persistent setInterval.
-    app.post('/api/cron/update-prices', async (req, res) => {
-        // Protect with a shared secret so only your cron runner can call it
-        const secret = req.headers['x-cron-secret'];
-        if (secret !== process.env.CRON_SECRET) {
+    const cronHandler = async (req, res) => {
+        // Vercel Cron sends Authorization: Bearer <CRON_SECRET>
+        const authHeader = req.headers['authorization'];
+        const cronSecret = process.env.CRON_SECRET;
+        const customSecret = req.headers['x-cron-secret'];
+
+        const isAuthorized = 
+            (authHeader === `Bearer ${cronSecret}`) || 
+            (customSecret === cronSecret) ||
+            (process.env.NODE_ENV !== 'production'); // Allow local testing
+
+        if (!isAuthorized && cronSecret) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
+
         try {
             const { runAutoUpdate } = require('./services/portfolioAutoUpdater');
             await runAutoUpdate(req.io);
-            res.json({ message: 'Price update complete' });
+            res.json({ message: 'Price update complete', timestamp: new Date() });
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
-    });
+    };
+
+    app.get('/api/cron/update-prices', cronHandler);
+    app.post('/api/cron/update-prices', cronHandler);
 
     app.get('/', (_req, res) => {
         res.json({ message: 'TRADAI Backend API is running.' });

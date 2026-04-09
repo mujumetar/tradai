@@ -16,11 +16,18 @@ const createApp = require('./createApp');
 const { startAutoUpdater } = require('./services/portfolioAutoUpdater');
 
 // ── WebPush ─────────────────────────────────────────────────────────────────
-webpush.setVapidDetails(
-    'mailto:support@tradai.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+// Only initialise web-push when VAPID keys are provided.
+// During local development you can leave them blank and the server will
+// start normally; push notifications simply won't be sent.
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        'mailto:support@tradai.com',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+} else {
+    console.warn('⚠️  VAPID keys not set — web push notifications are disabled.');
+}
 
 // ── Build Express app ───────────────────────────────────────────────────────
 const app = createApp();

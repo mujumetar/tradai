@@ -7,9 +7,9 @@ import {
     Globe, Lock, Activity, Wifi, WifiOff, Eye, EyeOff
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { io } from "socket.io-client";
 import api from "../utils/api";
 import { API_BASE_URL } from "../config";
+import useSocket from "../hooks/useSocket";
 
 // ── Currency formatters ──────────────────────────────────────────────────────
 const CURRENCIES = [
@@ -618,83 +618,103 @@ const PortfolioView = () => {
 
     useEffect(() => { load(); }, [load]);
 
-    // ── WebSocket — real-time live price engine ──────────────────────────────────
-    // Fix: API_BASE_URL is '' in dev (Vite proxy handles /api).
-    // socket.io MUST connect to the actual backend origin.
+    // ── Unified Communication Engine (Socket.io + Pusher) ──────────────────────────
+    const socketUrl = API_BASE_URL
+        ? API_BASE_URL
+        : (import.meta.env.DEV
+            ? "http://localhost:5000"
+            : window.location.origin);
+
+    const { on, off, isConnected } = useSocket(socketUrl, {
+        path: "/socket.io",
+        reconnectionAttempts: 15,
+        reconnectionDelay: 2000,
+    });
+
     useEffect(() => {
-        const socketUrl = API_BASE_URL
-            ? API_BASE_URL
-            : (import.meta.env.DEV
-                ? "http://localhost:5000"
-                : window.location.origin);
+        setIsSocketConnected(isConnected);
+    }, [isConnected]);
 
-        console.log("[Portfolio WS] Connecting to:", socketUrl);
+    const handlePriceUpdate = useCallback((data) => {
+        setCalls(prev =>
+            prev.map(call => {
+                if (String(call._id) !== String(data.id)) return call;
 
-        const socket = io(socketUrl, {
-            transports: ["websocket", "polling"],
-            reconnectionAttempts: 15,
-            reconnectionDelay: 2000,
-            path: "/socket.io",
-        });
+                const TERMINAL = ["SL_HIT", "TARGET3_HIT", "CLOSED"];
+                const isAlreadyTerminal = TERMINAL.includes(call.status);
+                const isNowTerminal = TERMINAL.includes(data.status);
 
-        socket.on("connect", () => {
-            console.log("[Portfolio WS] Connected:", socket.id);
-            setIsSocketConnected(true);
-        });
+                if (isAlreadyTerminal && !isNowTerminal) return call;
 
-        socket.on("connect_error", (err) => {
-            console.warn("[Portfolio WS] Connection error:", err.message);
-        });
+                const freshPnl = data.pnl ||
+                    computePnl({ ...call, currentPrice: data.currentPrice }, data.currentPrice);
 
-        socket.on("disconnect", (reason) => {
-            console.log("[Portfolio WS] Disconnected:", reason);
-            setIsSocketConnected(false);
-        });
+                return {
+                    ...call,
+                    currentPrice: isNowTerminal
+                        ? (data.pnl?.frozen ? call.currentPrice : data.currentPrice)
+                        : data.currentPrice,
+                    status: data.status || call.status,
+                    lastPriceUpdate: data.lastUpdate,
+                    frozen: data.frozen || isNowTerminal,
+                    pnl: freshPnl,
+                };
+            })
+        );
+        setLiveUpdateCount(n => n + 1);
+        setLastTickTime(new Date());
+    }, []);
 
-        // ── The key handler: update currentPrice + pnl in-memory ─────────────
-        socket.on("price_update", (data) => {
-            setCalls(prev =>
-                prev.map(call => {
-                    if (String(call._id) !== String(data.id)) return call;
+    useEffect(() => {
+        on("price_update", handlePriceUpdate);
+        return () => off("price_update", handlePriceUpdate);
+    }, [on, off, handlePriceUpdate]);
 
-                    // ── Terminal guard: never overwrite a frozen call's P&L ──
-                    const TERMINAL = ["SL_HIT", "TARGET3_HIT", "CLOSED"];
-                    const isAlreadyTerminal = TERMINAL.includes(call.status);
-                    const isNowTerminal = TERMINAL.includes(data.status);
+    // ── 3-second Live Price Polling (works on Vercel without Pusher) ────────────
+    // Calls the lightweight /api/live-prices endpoint every 3s.
+    // Only updates price-critical fields: currentPrice, status, pnl, frozen.
+    // Falls back to this whenever socket/Pusher is not connected.
+    useEffect(() => {
+        let isMounted = true;
 
-                    // If call is already at terminal state, stop updating entirely.
-                    if (isAlreadyTerminal && !isNowTerminal) return call;
+        const pollPrices = async () => {
+            try {
+                const { data: prices } = await api.get('/live-prices');
+                if (!isMounted) return;
 
-                    const freshPnl = data.pnl ||
-                        computePnl({ ...call, currentPrice: data.currentPrice }, data.currentPrice);
+                setCalls(prev => prev.map(call => {
+                    const fresh = prices.find(p => String(p._id) === String(call._id));
+                    if (!fresh) return call;
+
+                    // Don't overwrite a terminal (frozen) call that we already know about
+                    const TERMINAL = ['SL_HIT', 'TARGET3_HIT', 'CLOSED'];
+                    if (call.frozen && !TERMINAL.includes(fresh.status)) return call;
 
                     return {
                         ...call,
-                        // For frozen/terminal events, lock CMP at the trigger price
-                        currentPrice: isNowTerminal
-                            ? (data.pnl?.frozen ? call.currentPrice : data.currentPrice)
-                            : data.currentPrice,
-                        status: data.status || call.status,
-                        lastPriceUpdate: data.lastUpdate,
-                        frozen: data.frozen || isNowTerminal,
-                        pnl: freshPnl,
+                        currentPrice:     fresh.currentPrice    ?? call.currentPrice,
+                        status:           fresh.status          ?? call.status,
+                        lastPriceUpdate:  fresh.lastPriceUpdate ?? call.lastPriceUpdate,
+                        frozen:           fresh.frozen          ?? call.frozen,
+                        pnl:              fresh.pnl             ?? call.pnl,
                     };
-                })
-            );
-            setLiveUpdateCount(n => n + 1);
-            setLastTickTime(new Date());
-        });
+                }));
 
-        return () => socket.disconnect();
+                setLiveUpdateCount(n => n + 1);
+                setLastTickTime(new Date());
+                // Mark as "connected" so the Live chip shows green
+                setIsSocketConnected(true);
+            } catch {
+                // Silently ignore — will retry next tick
+                setIsSocketConnected(false);
+            }
+        };
+
+        // Start immediately, then every 3 seconds
+        pollPrices();
+        const t = setInterval(pollPrices, 3000);
+        return () => { isMounted = false; clearInterval(t); };
     }, []);
-
-    // ── Fallback poll every 90s if socket drops ─────────────────────────────────
-    useEffect(() => {
-        const t = setInterval(() => {
-            if (!isSocketConnected) load(true);
-        }, 90000);
-        return () => clearInterval(t);
-    }, [load, isSocketConnected]);
 
     // ── Filtered view ────────────────────────────────────────────────────────────
     const filtered = calls.filter(c => {

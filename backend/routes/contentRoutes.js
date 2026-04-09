@@ -4,7 +4,7 @@ const upload = require('../middleware/uploadMiddleware');
 const {
     getBlogs, getAcademy, getTradeIdeas,
     createBlog, updateBlog, deleteBlog,
-    createTradeIdea, updateTradeIdea, deleteTradeIdea, closeTradeIdea, getLivePrice, searchTickers
+    createTradeIdea, updateTradeIdea, deleteTradeIdea, closeTradeIdea, getLivePrice, getLivePrices, searchTickers
 } = require('../controllers/contentController');
 const { protect, admin } = require('../middleware/authMiddleware');
 const roles = require('../middleware/roleMiddleware');
@@ -15,6 +15,7 @@ router.get('/academy', getAcademy);
 router.get('/trade-ideas', getTradeIdeas);
 router.get('/trade-ideas/live-price', getLivePrice);
 router.get('/trade-ideas/search-tickers', searchTickers);
+router.get('/live-prices', getLivePrices);   // ← lightweight 3s polling endpoint
 
 // Admin Content routes - allowing manager role too
 router.use(protect);

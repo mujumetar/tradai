@@ -10,10 +10,25 @@
 
 const TradeIdea = require('../models/TradeIdea');
 const axios = require('axios');
+const Pusher = require('pusher');
+
+// ── Pusher Setup ─────────────────────────────────────────────────────────────
+let pusher = null;
+if (process.env.PUSHER_APP_ID && process.env.PUSHER_KEY && process.env.PUSHER_SECRET) {
+    pusher = new Pusher({
+        appId: process.env.PUSHER_APP_ID,
+        key: process.env.PUSHER_KEY,
+        secret: process.env.PUSHER_SECRET,
+        cluster: process.env.PUSHER_CLUSTER,
+        useTLS: true,
+    });
+} else {
+    console.warn('⚠️  Pusher keys not set — real-time updates via Pusher are disabled.');
+}
 
 // ── Tuning knobs ─────────────────────────────────────────────────────────────
 const FETCH_INTERVAL = 5000;     // ms between full price-fetch cycles
-const BATCH_SIZE     = 5;        // parallel API calls per batch
+const BATCH_SIZE = 5;        // parallel API calls per batch
 
 // ── Terminal status set ───────────────────────────────────────────────────────
 // Once a call reaches one of these statuses, its P&L is frozen and no further
@@ -42,28 +57,108 @@ const fetchCryptoPrice = async (ticker) => {
     }
 };
 
+// ── In-memory mappings for resolved tickers (e.g. "NIFTY22900PE" -> "NIFTY2640222900PE.NS") ──
+const resolvedTickerCache = new Map();
+
+const getNSEExpiryTickers = (base, strike, type) => {
+    const symbols = [];
+    const now = new Date();
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    
+    let current = new Date(now);
+    const istHour = now.getUTCHours() + 5;
+    const istMinute = now.getUTCMinutes() + 30;
+    const isLateThursday = now.getDay() === 4 && (istHour > 15 || (istHour === 15 && istMinute > 30));
+    
+    if (isLateThursday) current.setDate(current.getDate() + 1);
+
+    for (let i = 0; i < 4; i++) {
+        const nextThursday = new Date(current);
+        nextThursday.setDate(current.getDate() + (4 + 7 - current.getDay()) % 7);
+        if (i === 0 && nextThursday.getTime() === current.getTime() && isLateThursday) {
+            nextThursday.setDate(nextThursday.getDate() + 7);
+        }
+        
+        const yy = String(nextThursday.getFullYear()).slice(-2);
+        const m = nextThursday.getMonth() + 1;
+        const mmm = months[nextThursday.getMonth()];
+        const dd = String(nextThursday.getDate()).padStart(2, '0');
+        
+        // Format A: NIFTY2640222900PE.NS
+        symbols.push(`${base}${yy}${m}${dd}${strike}${type}.NS`);
+        // Format B: NIFTY26APR22900PE.NS
+        symbols.push(`${base}${yy}${mmm}${strike}${type}.NS`);
+        // Format C: NIFTY26APR0222900PE.NS
+        symbols.push(`${base}${yy}${mmm}${dd}${strike}${type}.NS`);
+        
+        current = new Date(nextThursday);
+        current.setDate(current.getDate() + 1);
+    }
+    return symbols;
+};
+
 const fetchYahooPrice = async (ticker, market) => {
+    // 1. Normalize: remove all whitespace and convert to uppercase
+    const cleanTicker = ticker.replace(/\s+/g, '').toUpperCase();
+
+    // 2. Check cache first
+    if (resolvedTickerCache.has(cleanTicker)) {
+        return await fetchIndividualYahooPrice(resolvedTickerCache.get(cleanTicker));
+    }
+
     const symbolMap = {
-        NIFTY: '^NSEI', BANKNIFTY: '^NSEBANK', FINNIFTY: '^CNXFIN', SENSEX: '^BSESN',
-        NIFTY50: '^NSEI', MIDCAP: '^CNXMID', SMALLCAP: '^CNXSMALL',
-        NIFTY_IT: '^CNXIT', NIFTY_PHARMA: '^CNXPHARMA', NIFTY_AUTO: '^CNXAUTO',
-        NIFTY_REALTY: '^CNXREALTY', NIFTY_METAL: '^CNXMETAL', NIFTY_FMCG: '^CNXFMCG',
+        // Core Indices
+        NIFTY: '^NSEI', NIFTY50: '^NSEI', BANKNIFTY: '^NSEBANK', FINNIFTY: '^CNXFIN', SENSEX: '^BSESN',
+        MIDCAP: '^CNXMID', SMALLCAP: '^CNXSMALL',
+        
+        // Sectoral Indices
+        NIFTYIT: '^CNXIT', NIFTYPHARMA: '^CNXPHARMA', NIFTYAUTO: '^CNXAUTO',
+        NIFTYREALTY: '^CNXREALTY', NIFTYMETAL: '^CNXMETAL', NIFTYFMCG: '^CNXFMCG',
+        NIFTYBANK: '^NSEBANK', NIFTYENERGY: '^CNXENERGY', NIFTYINFRA: '^CNXINFRA',
+        NIFTYPSE: '^CNXPSE', NIFTYCPSE: '^CNXCPSE', NIFTYMNC: '^CNXMNC',
+        
+        // Commodities & Forex
         GOLD: 'GC=F', SILVER: 'SI=F', CRUDEOIL: 'CL=F', NATURALGAS: 'NG=F',
         EURUSD: 'EURUSD=X', USDINR: 'USDINR=X', GBPUSD: 'GBPUSD=X',
         GBPINR: 'GBPINR=X', USDJPY: 'USDJPY=X', AUDUSD: 'AUDUSD=X'
     };
-    let yTicker = symbolMap[ticker.toUpperCase()];
+
+    let yTicker = symbolMap[cleanTicker];
+
     if (!yTicker) {
-        if (ticker.includes('.') || ticker.includes('^') || ticker.includes('=')) {
-            yTicker = ticker.toUpperCase();
+        // ── Automated Expiry Resolver for NSE Options ──
+        // Regex matches: (NIFTY|BANKNIFTY|FINNIFTY) + (Strike) + (CE|PE)
+        const optionMatch = cleanTicker.match(/^(NIFTY|BANKNIFTY|FINNIFTY)(\d+)(CE|PE)$/);
+        if (optionMatch && market === 'NSE') {
+            const [_, base, strike, type] = optionMatch;
+            const candidates = getNSEExpiryTickers(base, strike, type);
+            
+            for (const cand of candidates) {
+                const price = await fetchIndividualYahooPrice(cand);
+                if (price) {
+                    resolvedTickerCache.set(cleanTicker, cand);
+                    return price;
+                }
+            }
+        }
+
+        // Standard logic
+        if (cleanTicker.includes('.') || cleanTicker.includes('^') || cleanTicker.includes('=')) {
+            yTicker = cleanTicker;
         } else if (market === 'NSE') {
-            yTicker = ticker.toUpperCase() + '.NS';
+            yTicker = cleanTicker + '.NS';
         } else if (market === 'BSE') {
-            yTicker = ticker.toUpperCase() + '.BO';
+            yTicker = cleanTicker + '.BO';
         } else {
-            yTicker = ticker.toUpperCase();
+            yTicker = cleanTicker;
         }
     }
+
+    return await fetchIndividualYahooPrice(yTicker);
+};
+
+// Helper for the actual HTTP call
+const fetchIndividualYahooPrice = async (yTicker) => {
     try {
         const { data } = await axios.get(
             `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yTicker)}?interval=1m&range=1d`,
@@ -76,13 +171,9 @@ const fetchYahooPrice = async (ticker, market) => {
             }
         );
         const meta = data?.chart?.result?.[0]?.meta;
-        if (!meta || meta.regularMarketPrice == null) {
-            console.error(`[Yahoo] No price data for ${yTicker}`);
-            return null;
-        }
+        if (!meta || meta.regularMarketPrice == null) return null;
         return meta.regularMarketPrice;
     } catch (err) {
-        console.error(`[Yahoo] Fetch failed for ${yTicker}:`, err.response?.status ?? err.message);
         return null;
     }
 };
@@ -279,37 +370,62 @@ const runAutoUpdate = async (io = null) => {
 
             // ── Update in-memory cache for heartbeat ─────────────────────────
             const pnl = computePnlPayload(call, newStatus, livePrice);
-            priceCache.set(String(call._id), {
+            const cacheKey = String(call._id);
+            const cachedEntry = priceCache.get(cacheKey);
+
+            priceCache.set(cacheKey, {
                 ticker: call.ticker,
                 currentPrice: livePrice,
                 status: newStatus,
                 lastUpdate: new Date(),
-                pnl
+                pnl,
+                lastNotifiedPrice: cachedEntry?.lastNotifiedPrice || call.currentPrice,
+                lastNotifiedTime: cachedEntry?.lastNotifiedTime || 0
             });
 
             // ── Live Price Monitoring (Watched Trades) 🌐 ────────────────────
             // Notify specific users who are "watching" this particular trade.
-            // Frequency: Every update tick where the price actually moved.
-            if (livePrice !== call.currentPrice && !isTerminal) {
+            // Frequency: Only if price has moved significantly (>1%) OR 15 mins passed.
+            const updatedCacheEntry = priceCache.get(cacheKey);
+            const lastPrice = updatedCacheEntry.lastNotifiedPrice;
+            const lastTime = updatedCacheEntry.lastNotifiedTime;
+            const now = Date.now();
+
+            const priceDiffPct = lastPrice ? Math.abs((livePrice - lastPrice) / lastPrice) * 100 : 100;
+            const timeDiffMin = (now - lastTime) / (1000 * 60);
+
+            if (!isTerminal && (priceDiffPct >= 1.0 || timeDiffMin >= 15)) {
                 const { notifyLivePrice } = require('./notificationService');
                 notifyLivePrice({
                     tradeIdea: call,
                     price: livePrice,
                     pnlPercent: pnl.percent
-                }).catch(() => {});
+                }).catch(() => { });
+
+                // Update notification markers in cache
+                updatedCacheEntry.lastNotifiedPrice = livePrice;
+                updatedCacheEntry.lastNotifiedTime = now;
             }
 
-            // ── Emit real-time tick via Socket.io ────────────────────────────
+            // ── Emit real-time tick via Socket.io / Pusher ────────────────────────────
+            const payload = {
+                id: call._id,
+                ticker: call.ticker,
+                currentPrice: livePrice,
+                status: newStatus,
+                lastUpdate: new Date(),
+                frozen: pnl.frozen,
+                pnl
+            };
+
             if (io) {
-                io.emit('price_update', {
-                    id: call._id,
-                    ticker: call.ticker,
-                    currentPrice: livePrice,
-                    status: newStatus,
-                    lastUpdate: new Date(),
-                    frozen: pnl.frozen,
-                    pnl
-                });
+                io.emit('price_update', payload);
+            }
+
+            // Also trigger Pusher for serverless production
+            if (pusher) {
+                pusher.trigger('price-updates', 'price_update', payload)
+                    .catch(err => console.error('[Pusher] Trigger failed:', err.message));
             }
         });
 
@@ -336,7 +452,8 @@ const startPriceHeartbeat = (io) => {
         for (const [id, entry] of priceCache) {
             // Skip terminal/frozen calls — their P&L is settled, no more updates needed
             if (TERMINAL_STATUSES.has(entry.status)) continue;
-            io.emit('price_update', {
+
+            const payload = {
                 id,
                 ticker: entry.ticker,
                 currentPrice: entry.currentPrice,
@@ -344,7 +461,15 @@ const startPriceHeartbeat = (io) => {
                 lastUpdate: entry.lastUpdate,
                 frozen: false,
                 pnl: entry.pnl,
-            });
+            };
+
+            if (io) {
+                io.emit('price_update', payload);
+            }
+
+            // Only heartbeat Pusher if we are not in a strict serverless context 
+            // where cost/limits per trigger might be an issue. 
+            // For now, let's keep heartbeat to Socket.io local and let runAutoUpdate handle Pusher.
         }
     }, 1000);  // every 1 second — purely in-memory, zero DB/HTTP traffic
 };

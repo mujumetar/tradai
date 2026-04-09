@@ -19,9 +19,14 @@ self.addEventListener('push', (event) => {
             payload.title = parsed.notification?.title || parsed.title || payload.title;
             payload.body = parsed.notification?.body || parsed.body || payload.body;
             payload.url = parsed.data?.url || (parsed.notification?.data?.url) || parsed.url || payload.url;
+            payload.tag = parsed.notification?.tag || parsed.tag || 'tradai-alert';
+            // Disable renotify for 'live-' updates to avoid constant buzzing
+            payload.renotify = !(payload.tag.startsWith('live-'));
         } catch (e) {
             console.warn('[SW] Payload not JSON, using text fallback');
             payload.body = event.data.text() || payload.body;
+            payload.tag = 'tradai-alert';
+            payload.renotify = true;
         }
     }
 
@@ -30,8 +35,8 @@ self.addEventListener('push', (event) => {
         icon: '/logo.png', 
         badge: '/logo.png',
         vibrate: [100, 50, 100],
-        tag: 'tradai-alert', // Static tag so new alerts replace old ones of same type
-        renotify: true,
+        tag: payload.tag,
+        renotify: payload.renotify,
         data: {
             url: payload.url
         },
