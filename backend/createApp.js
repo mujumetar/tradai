@@ -72,7 +72,9 @@ function createApp(io = null) {
         app.use(morgan('dev'));
     }
 
-    // ── Routes ──────────────────────────────────────────────────────────────
+    const { getLivePrices } = require('./controllers/contentController');
+    app.get('/api/live-prices', getLivePrices);
+
     app.use('/api/users', userRoutes);
     app.use('/api/public', publicRoutes); // Public routes first
     app.use('/api', contentRoutes);
