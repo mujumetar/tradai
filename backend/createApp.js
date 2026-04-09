@@ -74,6 +74,7 @@ function createApp(io = null) {
 
     const { getLivePrices } = require('./controllers/contentController');
     app.get('/api/live-prices', getLivePrices);
+    app.get('/live-prices', getLivePrices); // Fallback for stripped /api prefix
 
     app.use('/api/users', userRoutes);
     app.use('/api/public', publicRoutes); // Public routes first
