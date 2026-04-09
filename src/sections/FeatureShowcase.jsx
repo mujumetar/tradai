@@ -2,18 +2,18 @@ import { motion } from "framer-motion";
 
 const features = [
     {
-        title: "Trade Ideas",
-        description: "Get curated, research-backed trade ideas from Ai registered analysts across all market caps. Tailored signals designed for consistent alpha.",
-        image: "https://images.unsplash.com/photo-1611974717482-9625b7eeed70?auto=format&fit=crop&q=80&w=800",
-        reverse: false,
-        color: "from-orange-500/20"
-    },
-    {
         title: "Portfolio Health",
         description: "Connect your broker and get a comprehensive health check for your portfolio. Identify risks, sector overlaps, and growth potential in one click.",
         image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
-        reverse: true,
+        reverse: false,
         color: "from-blue-500/20"
+    },
+    {
+        title: "Trade Ideas",
+        description: "Get curated, research-backed trade ideas from Ai registered analysts across all market caps. Tailored signals designed for consistent alpha.",
+        image: "https://images.unsplash.com/photo-1611974717482-9625b7eeed70?auto=format&fit=crop&q=80&w=800",
+        reverse: true,
+        color: "from-orange-500/20"
     },
     {
         title: "TRADAI One",

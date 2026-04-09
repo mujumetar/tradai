@@ -8,7 +8,7 @@ import api from "../utils/api";
 import PortfolioView from "./Portfolio";
 
 const TradeIdeas = () => {
-    const [activeTab, setActiveTab] = useState("ideas");
+    const [activeTab, setActiveTab] = useState("portfolio");
     const [ideas, setIdeas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -53,16 +53,16 @@ const TradeIdeas = () => {
                 {/* Tabs */}
                 <div className="flex gap-4 sm:gap-6 mt-8 sm:mt-10 overflow-x-auto no-scrollbar">
                     <button
-                        onClick={() => setActiveTab('ideas')}
-                        className={`pb-4 text-sm sm:text-base font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === 'ideas' ? 'border-accent-orange text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
-                    >
-                        Trade Ideas
-                    </button>
-                    <button
                         onClick={() => setActiveTab('portfolio')}
                         className={`pb-4 text-sm sm:text-base font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === 'portfolio' ? 'border-accent-orange text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
                     >
                         Live Portfolio Tracking
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('ideas')}
+                        className={`pb-4 text-sm sm:text-base font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === 'ideas' ? 'border-accent-orange text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                    >
+                        Trade Ideas
                     </button>
                 </div>
             </section>
