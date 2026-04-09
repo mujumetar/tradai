@@ -716,6 +716,16 @@ const PortfolioView = () => {
         return () => { isMounted = false; clearInterval(t); };
     }, []);
 
+    // ── 30-second Full Data Refresh ──────────────────────────────────────────────
+    // Refetches the entire trade list every 30 seconds to catch new trades or
+    // major metadata updates that the lightweight 3s poll doesn't cover.
+    useEffect(() => {
+        const t = setInterval(() => {
+            load(false); // pass false to avoid showing a global loading screen every 30s
+        }, 30000);
+        return () => clearInterval(t);
+    }, [load]);
+
     // ── Filtered view ────────────────────────────────────────────────────────────
     const filtered = calls.filter(c => {
         if (marketFilter !== "ALL" && c.market?.toUpperCase() !== marketFilter) return false;
