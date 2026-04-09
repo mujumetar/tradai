@@ -32,10 +32,10 @@ const Footer = () => {
             { name: "Wealth Management", href: "/wealth" },
         ],
         Resources: [
+            { name: "Live Portfolio Tracking", href: "/research" },
+            { name: "Trade Ideas", href: "/research" },
             { name: "Blogs", href: "/blogs" },
             { name: "FAQ", href: "/faq" },
-            { name: "Trade Ideas", href: "/ideas" },
-            { name: "Stock Analysis", href: "/analysis" },
         ],
     };
 
@@ -52,8 +52,8 @@ const Footer = () => {
                             <span className="text-2xl font-bold tracking-tight text-white">TRADAI</span>
                         </Link>
                         <p className="text-gray-400 max-w-sm mb-6 sm:mb-8 text-sm leading-relaxed">
-                            Empowering India's wealth journey through smart investment ideas,
-                            robust portfolio health checks, and expert guidance.
+                            Empowering India's wealth journey through robust portfolio health checks,
+                            smart investment ideas, and expert guidance.
                         </p>
                         <div className="flex gap-3 sm:gap-4">
                             {[
