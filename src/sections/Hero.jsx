@@ -30,7 +30,7 @@ const Hero = () => {
                     </h1>
                     <p className="text-base sm:text-xl text-gray-400 mb-8 sm:mb-10 max-w-lg leading-relaxed">
                         TRADAI helps you build wealth with institutional-grade research,
-                        personalized trade ideas, and a powerful portfolio health checker.
+                        a powerful portfolio health checker, and personalized trade ideas.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-5">
