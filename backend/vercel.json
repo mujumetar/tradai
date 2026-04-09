@@ -12,6 +12,9 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 30
+    },
+    "api/live-prices.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
