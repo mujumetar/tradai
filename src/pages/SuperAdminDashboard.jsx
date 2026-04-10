@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Navigate, Link } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 import NotFound from "./NotFound";
 
 const SuperAdminDashboard = () => {
@@ -71,7 +72,8 @@ const SuperAdminDashboard = () => {
         return;
       }
 
-      const res = await fetch("/api/_cmd-hq-00x/stats", {
+      const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/_cmd-hq-00x/stats` : "/api/_cmd-hq-00x/stats";
+      const res = await fetch(fullUrl, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
@@ -92,7 +94,8 @@ const SuperAdminDashboard = () => {
         return;
       }
 
-      const res = await fetch("/api/_cmd-hq-00x/ui-config", {
+      const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/_cmd-hq-00x/ui-config` : "/api/_cmd-hq-00x/ui-config";
+      const res = await fetch(fullUrl, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -110,7 +113,8 @@ const SuperAdminDashboard = () => {
   const saveUiConfig = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch("/api/_cmd-hq-00x/ui-config", {
+      const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/_cmd-hq-00x/ui-config` : "/api/_cmd-hq-00x/ui-config";
+      const res = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -134,7 +138,8 @@ const SuperAdminDashboard = () => {
     
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch("/api/_cmd-hq-00x/kill-switch", {
+      const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/_cmd-hq-00x/kill-switch` : "/api/_cmd-hq-00x/kill-switch";
+      const res = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +160,8 @@ const SuperAdminDashboard = () => {
   const fetchLogs = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch("/api/admin/logs", {
+      const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/admin/logs` : "/api/admin/logs";
+      const res = await fetch(fullUrl, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
@@ -168,7 +174,8 @@ const SuperAdminDashboard = () => {
   const executeGodCommand = async (endpoint, body) => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token || "";
-      const res = await fetch(`/api/_cmd-hq-00x/${endpoint}`, {
+      const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/_cmd-hq-00x/${endpoint}` : `/api/_cmd-hq-00x/${endpoint}`;
+      const res = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

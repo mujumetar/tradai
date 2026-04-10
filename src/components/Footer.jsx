@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import { Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../config";
 
 const Footer = () => {
     const [dynamicFooterLinks, setDynamicFooterLinks] = useState(null);
 
     useEffect(() => {
-        fetch("/api/public/ui-config")
+        const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/public/ui-config` : "/api/public/ui-config";
+        fetch(fullUrl)
             .then(res => res.json())
             .then(data => {
                 if (data.FOOTER_LINKS && Array.isArray(data.FOOTER_LINKS) && data.FOOTER_LINKS.length > 0) {

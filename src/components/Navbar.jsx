@@ -7,6 +7,7 @@ import PWAInstallButton from "./PWAInstallButton";
 import NotificationAccessModal from "./NotificationAccessModal";
 import { subscribeToPush, getPushSubscription } from "../utils/pushNotifications";
 import { requestFcmToken } from "../utils/firebase";
+import { API_BASE_URL } from "../config";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,8 @@ const Navbar = () => {
     useEffect(() => { setIsOpen(false); setUserMenuOpen(false); }, [location]);
 
     useEffect(() => {
-        fetch("/api/public/ui-config")
+        const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/public/ui-config` : "/api/public/ui-config";
+        fetch(fullUrl)
             .then(res => res.json())
             .then(data => {
                 if (data.SIDEBAR_LINKS && Array.isArray(data.SIDEBAR_LINKS) && data.SIDEBAR_LINKS.length > 0) {

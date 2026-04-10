@@ -527,7 +527,8 @@ const AdminDashboard = () => {
     const [roleRoutes, setRoleRoutes] = useState([]);
 
     useEffect(() => {
-        fetch("/api/public/ui-config")
+        const fullUrl = API_BASE_URL ? `${API_BASE_URL}/api/public/ui-config` : "/api/public/ui-config";
+        fetch(fullUrl)
             .then(res => res.json())
             .then(data => {
                 const roleKey = `ROLE_ROUTES_${user.role?.toUpperCase()}`;
