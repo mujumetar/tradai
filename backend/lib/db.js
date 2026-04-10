@@ -15,9 +15,14 @@ async function connectDB() {
     if (cached.conn) return cached.conn;
 
     if (!cached.promise) {
+        const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+        if (!uri) {
+            throw new Error('MongoDB connection string is missing! Please set MONGO_URI in your environment variables.');
+        }
+
         console.log('Connecting to MongoDB...');
         cached.promise = mongoose
-            .connect(process.env.MONGO_URI, {
+            .connect(uri, {
                 bufferCommands: false,
                 maxPoolSize: 10,
                 serverSelectionTimeoutMS: 5000,
