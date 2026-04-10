@@ -60,11 +60,6 @@ function computePnl(idea) {
 const TERMINAL = new Set(['SL_HIT', 'TARGET3_HIT', 'CLOSED']);
 
 module.exports = async (req, res) => {
-    // CORS — allow all origins for the serverless bridge
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
