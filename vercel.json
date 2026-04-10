@@ -1,18 +1,18 @@
 {
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/live-prices",
-      "destination": "/api/live-prices.js"
-    },
+  "headers": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" },
+        { "key": "Pragma", "value": "no-cache" }
+      ]
     }
+  ],
+  "rewrites": [
+    { "source": "/api/live-prices", "destination": "/api/live-prices.js" },
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "crons": [
     {
