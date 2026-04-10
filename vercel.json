@@ -9,18 +9,21 @@
       ]
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/live-prices",
-      "destination": "/backend/api/live-prices.js"
+      "src": "/api/live-prices",
+      "dest": "/api/live-prices.js"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/api/index.js"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/((?!api/|assets/|favicon.ico|manifest.webmanifest).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
