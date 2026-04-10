@@ -10,9 +10,18 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/live-prices", "destination": "/api/live-prices.js" },
-    { "source": "/api/(.*)", "destination": "/api/index.js" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    {
+      "source": "/api/live-prices",
+      "destination": "/backend/api/live-prices.js"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/backend/api/index.js"
+    },
+    {
+      "source": "/((?!api/|assets/|favicon.ico|manifest.webmanifest).*)",
+      "destination": "/index.html"
+    }
   ],
   "crons": [
     {
