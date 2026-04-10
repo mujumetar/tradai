@@ -41,7 +41,9 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
         const pushPayload = JSON.stringify({
             notification: {
                 title: title,
-                body: body
+                body: body,
+                tag: options.tag, // Added tag support
+                icon: '/apple-touch-icon.png'
             },
             data: {
                 url: url
@@ -83,6 +85,7 @@ exports.notifyUsers = async ({ title, body, url = '/research', type = 'all', sen
                             webpush: {
                                 fcmOptions: { link: url },
                                 notification: {
+                                    tag: options.tag, // Added tag support
                                     actions: [
                                         { action: 'view', title: 'View Research' },
                                         { action: 'close', title: 'Dismiss' }

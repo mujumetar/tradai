@@ -362,6 +362,7 @@ const runAutoUpdate = async (io = null) => {
                         title: `${emoji} Trade Alert: ${call.ticker}`,
                         body: `Trade update for ${call.ticker}:\nStatus: ${hitLabel}\nPrice: ₹${livePrice}\n\nCheck your portfolio for more details.`,
                         url: '/research',
+                        tag: `trade-alert-${call.ticker}`, // Prevent stacking
                         type: call.isPremium ? 'premium' : 'all',
                         sendEmail: true
                     }).catch(err => console.error(`[AutoUpdater] Notification failed for ${call.ticker}:`, err.message));

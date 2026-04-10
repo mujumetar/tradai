@@ -1,12 +1,28 @@
 {
+  "version": 2,
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/api/$1"
+      "source": "/api/live-prices",
+      "destination": "/api/live-prices.cjs"
     },
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
+      "destination": "/api/index.cjs"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/update-prices",
+      "schedule": "* * * * *"
+    }
+  ],
+  "functions": {
+    "api/*.cjs": {
+      "maxDuration": 30
+    }
+  }
 }
