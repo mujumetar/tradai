@@ -14,8 +14,6 @@ dotenv.config();
 const connectDB = require('../lib/db');
 const TradeIdea = require('../models/TradeIdea');
 
-// Simple in-memory rate limit (per serverless instance)
-const rateLimitMap = new Map();
 const RATE_LIMIT_MS = 1000;
 
 // PnL computation (mirrors the Mongoose virtual)
@@ -68,15 +66,6 @@ module.exports = async (req, res) => {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'GET') return res.status(405).json({ message: 'Method not allowed' });
-
-    // Rate limit: 1 req/s per IP
-    const ip      = req.headers['x-forwarded-for']?.split(',')[0].trim() || 'unknown';
-    const now     = Date.now();
-    const lastCall = rateLimitMap.get(ip) || 0;
-    if (now - lastCall < RATE_LIMIT_MS) {
-        return res.status(429).json({ message: 'Too fast — slow down.' });
-    }
-    rateLimitMap.set(ip, now);
 
     try {
         await connectDB();
