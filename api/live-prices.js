@@ -1,9 +1,11 @@
 /**
- * api/live-prices.js — Vercel Serverless Function (Root)
+ * api/live-prices.js — Vercel Serverless Function
  *
  * Lightweight endpoint polled every 3 seconds by the Portfolio frontend.
  * Returns only price-critical fields for all trades.
- * Triggers a background price refresh if data is >30s stale.
+ * Triggers a background price refresh (via runAutoUpdate) if data is >30s stale.
+ *
+ * Route: GET /api/live-prices
  */
 
 const dotenv = require('dotenv');
@@ -16,7 +18,7 @@ const TradeIdea = require('../backend/models/TradeIdea');
 const rateLimitMap = new Map();
 const RATE_LIMIT_MS = 1000;
 
-// PnL computation (mirrors the backend logic)
+// PnL computation (mirrors the Mongoose virtual)
 function computePnl(idea) {
     let cmp = idea.closingPrice || idea.currentPrice;
     if (!cmp) return null;
@@ -86,6 +88,8 @@ module.exports = async (req, res) => {
         ).lean();
 
         // ── Smart stale-data trigger ───────────────────────────────────────────
+        // If any active call is >30s old, fire a background price refresh.
+        // The NEXT poll (3s later) will see the fresh prices.
         const staleCutoff = new Date(Date.now() - 30_000);
         const hasStale    = ideas.some(i =>
             !TERMINAL.has(i.status) &&
