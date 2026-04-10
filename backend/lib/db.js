@@ -17,7 +17,8 @@ async function connectDB() {
     if (!cached.promise) {
         const uri = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGODB_URL || process.env.DATABASE_URL;
         if (!uri) {
-            throw new Error('MongoDB connection string is missing! Please set MONGO_URI in your Vercel Environment Variables.');
+            const availableKeys = Object.keys(process.env).join(', ');
+            throw new Error(`MongoDB URI is missing! Available variables: [${availableKeys}]. Please check your Vercel Dashboard.`);
         }
 
         console.log('Connecting to MongoDB...');
