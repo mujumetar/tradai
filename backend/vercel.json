@@ -2,7 +2,11 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/live-prices",
+      "destination": "/api/live-prices.js"
+    },
+    {
+      "source": "/api/(.*)",
       "destination": "/api/index.js"
     }
   ],
