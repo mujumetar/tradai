@@ -35,7 +35,11 @@ function createApp(io = null) {
     const app = express();
 
     // ── Middleware ──────────────────────────────────────────────────────────
-    app.use(cors()); // CORS must be at the very top to handle preflight OPTIONS
+    app.use(cors({
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'x-device-fingerprint', 'x-cron-secret']
+    }));
     app.use(killSwitchMiddleware);
     app.use(ipBanMiddleware);
     app.use(deviceBanMiddleware);

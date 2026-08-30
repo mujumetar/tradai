@@ -625,7 +625,7 @@ const PortfolioView = () => {
         const socketUrl = API_BASE_URL
             ? API_BASE_URL
             : (import.meta.env.DEV
-                ? "http://localhost:5000"
+                ? "" // Let Vite proxy handle /socket.io in dev mode to avoid mixed content
                 : window.location.origin);
 
         console.log("[Portfolio WS] Connecting to:", socketUrl);

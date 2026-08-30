@@ -22,6 +22,11 @@ const app = createApp(); // no io → safe no-op emitter
 
 // Export a handler that ensures DB is connected before processing
 module.exports = async (req, res) => {
+    // Handle OPTIONS requests early for CORS preflight
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
     try {
         await connectDB();
         return app(req, res);
