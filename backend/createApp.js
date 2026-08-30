@@ -47,8 +47,8 @@ function createApp(io = null) {
 
     // Attach io to every request. In serverless mode io is a no-op emitter.
     const safeIo = io || {
-        emit: () => {},
-        to: () => ({ emit: () => {} }),
+        emit: () => { },
+        to: () => ({ emit: () => { } }),
     };
     app.use((req, _res, next) => {
         // Allow updating io dynamically (e.g. in server.js)
